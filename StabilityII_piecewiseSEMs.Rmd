@@ -1,0 +1,15 @@
+---
+title: 'Stability, Resistance, Resilience: piecewise SEMs'
+author: "Dylan Craven"
+date: "July  2016"
+output: html_document
+---
+
+
+# insert hypothetical causal model
+
+# Temporal Stability
+
+# Resistance
+
+# Resilience
