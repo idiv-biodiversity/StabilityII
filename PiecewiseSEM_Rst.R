@@ -125,7 +125,7 @@ sem.fit(Rst_Dry_ModList,rs_12,corr.errors=c("Yn_eMNTD~~Yn_FDis4","Yn_PCAcwm4trts
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 
-sem.fit(Rst_Dry_ModList,rs_12,corr.errors=c("Yn_eMNTD~~Yn_FDis4"),conditional=T,
+sem.fit(Rst_Dry_ModList,rs_12,corr.errors=c("Yn_eMNTD~~Yn_FDis4" ),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 
