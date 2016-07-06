@@ -104,6 +104,12 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
 )
 
+[[STOP HERE]]
+sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #naive model
+
+
+
 sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
