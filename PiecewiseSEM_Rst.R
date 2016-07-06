@@ -11,7 +11,7 @@ library(dplyr)
 # Data
 rs_rl<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/StabII_ResistResil_FD_PD_PCA_CWM_29062016.csv",sep=",",header=T)
 
-rs_rl$PlotUnique2<-paste(rs_rl$Study,rs_rl$Study,rs_rl$BlockUnique,rs_rl$PlotUnique,sep="_")
+rs_rl$PlotUnique2<-paste(rs_rl$Study,rs_rl$Site,rs_rl$Block,rs_rl$Plot,sep="_")
 rs_rl$PlotUnique2<-as.factor(rs_rl$PlotUnique2)
 
 rs_rl<-filter(rs_rl,Climate_Bin=="SPEI12")
@@ -35,14 +35,13 @@ rs_12<-select(rs_rll,Climate_Bin, Value,Dir, Int,ExpYear,Site,BlockUnique,PlotUn
 
 
 rs_12$PlotUnique2<-droplevels(rs_12$PlotUnique2)
-rs_12$PlotUnique<-droplevels(rs_12$PlotUnique)
 rs_12$Site<-droplevels(rs_12$Site)
 
 rs_12<-arrange(rs_12,Site,PlotUnique2,ExpYear)
 
 #Transformations
 
-rs_12$Rst_Plot<-rs_122$Rst_Plot+.001
+rs_12$Rst_Plot<-rs_12$Rst_Plot+.001
 
                
 rs_12$SppN<-as.numeric(rs_12$SppN)
@@ -52,83 +51,98 @@ rs_12$lg2Rst12<-log(rs_12$Rst_Plot,2)
 rs_12$Dir<-as.factor(rs_12$Dir)
 rs_12$Int<-as.factor(rs_12$Int)
 
-rs_122<-subset(rs_12, !is.na(FRic4)) # for analysis with FRic4
+rs_122<-subset(rs_12, !is.na(Yn_FRic4)) # for analysis with FRic4
 
 ####################
 # fit SEMs #########
 ####################
 
+
+####################
+# eMNTD + FDis #####
+####################
+
+
 bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
 cc<-lmeControl(opt="optim")
 
 
-x1=corAR1(form=~ExpY_Ye |Site/PlotUnique2)
-x2=corCompSymm(form=~ExpY_Ye |Site/PlotUnique2)
+x1=corAR1(form=~ExpYear |Site/PlotUnique2)
+x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
 
 
-a<-lme(eMNTD_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-a1<-lme(eMNTD_12_Yn~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
+a<-lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
+a1<-lme(Yn_eMNTD~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
 AIC(a,a1)
 
-b<-lme(FDis4_12_Yn~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-b1<-lme(FDis4_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+re<-resid(a, type="normalized")
+fi<-fitted(a)  
+plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
+plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
+
+
+
+b<-lme(Yn_FDis4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+b1<-lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
 AIC(b,b1)
 
-c<-lme(PCAdim1_4trts_12_Yn~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-c1<-lme(PCAdim1_4trts_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+re<-resid(b1, type="normalized")
+fi<-fitted(b1)  
+plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
+plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
+
+
+c<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+c1<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
 AIC(c,c1)
 
-d<-lme(lg2Rst12~lg2SppN+PCAdim1_4trts_12_Yn+FDis4_12_Yn+eMNTD_12_Yn,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d1<-lme(lg2Rst12~lg2SppN+PCAdim1_4trts_12_Yn+FDis4_12_Yn+eMNTD_12_Yn,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+re<-resid(c1, type="normalized")
+fi<-fitted(c1)  
+plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
+plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
+
+
+d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
 AIC(d,d1)
 
-e<- lme(lg2Rst12~FDis4_12_Yn+PCAdim1_4trts_12_Yn+lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-e1<- lme(lg2Rst12~FDis4_12_Yn+PCAdim1_4trts_12_Yn+lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+re<-resid(d1, type="normalized")
+fi<-fitted(d1)  
+plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
 
 
-
-Rst_ModList=list(
-  lme(eMNTD_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
-  lme(FDis4_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
-  lme(PCAdim1_4trts_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
-  lme(lg2Rst12~FDis4_12_Yn+PCAdim1_4trts_12_Yn+lg2SppN,random=~~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+Rst_Dry_ModList=list(
+  lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
+  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
+  lme(lg2Rst12~Yn_FDis4+Yn_PCAcwm4trts+lg2SppN+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
   
 )
 
-sem.fit(Rst_ModList,rs_122,corr.errors=c("eMNTD_12_Yn~~FDis4_12_Yn","PCAdim1_4trts_12_Yn~~eMNTD_12_Yn","PCAdim1_4trts_12_Yn~~FDis4_12_Yn"),conditional=T,
+#Naive Model
+
+sem.fit(Rst_Dry_ModList,rs_12,corr.errors=c("Yn_eMNTD~~Yn_FDis4","PCAdim1_4trts_12_Yn~~Yn_eMNTD",
+                                            "PCAdim1_4trts_12_Yn~~FDis4_12_Yn","PCAdim1_4trts_12_Yn~~lg2SppN"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-sem.fisher.c(Rst_ModList, data=rs_122,corr.errors=c("eMNTD_12_Yn~~FDis4_12_Yn","PCAdim1_4trts_12_Yn~~eMNTD_12_Yn","PCAdim1_4trts_12_Yn~~FDis4_12_Yn"),
-             model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-sem.coefs(Rst_ModList,rs_122,standardize="scale")
-d_pc<- sem.coefs(Rst_ModList,rs_122,standardize="scale")
-#sem.coefs(Rst_ModList,rs_122,standardize="scale",corr.errors=c("eMNTD_12_Yn~~FDis4_12_Yn","PCAdim1_4trts_12_Yn~~eMNTD_12_Yn","PCAdim1_4trts_12_Yn~~FDis4_12_Yn"))
+# no further changes
+
+sem.coefs(Rst_Dry_ModList,rs_12,standardize="none",corr.errors=c("Yn_eMNTD~~Yn_FDis4","PCAdim1_4trts_12_Yn~~Yn_eMNTD",
+                                                               "PCAdim1_4trts_12_Yn~~FDis4_12_Yn","PCAdim1_4trts_12_Yn~~lg2SppN"))
+dry_rst_fdis_emntd_pc<- sem.coefs(Rst_Dry_ModList,rs_12,standardize="scale")
 
 
+dry_rst_fdis_emntd_modfit<-sem.model.fits(Rst_Dry_ModList)
 
-sem.missing.paths(Rst_ModList, rs_122,corr.errors=c("eMNTD_12_Yn~~FDis4_12_Yn","PCAdim1_4trts_12_Yn~~eMNTD_12_Yn","PCAdim1_4trts_12_Yn~~FDis4_12_Yn"),conditional=T)
+dry_rst_fdis_emntd_modfit$ResponseVars<-c("eMNTD","FDis4","Plot_Asynchrony","Temp_Stability")
+dry_rst_fdis_emntd_modfit$PredVars<-c("lg2SppN","lg2SppN","lg2SppN","F-S,eMNTD,Asychrony,FDis4,lg2SppN")
 
-#sem.model.fits(list(a,b,c,d),aicc=TRUE)
 
-a<-lme(eMNTD_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-b<-lme(FDis4_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-c<-lme(PCAdim1_4trts_12_Yn~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d<-lme(lg2Rst12~PCAdim1_4trts_12_Yn+lg2SppN+FDis4_12_Yn,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+sem.plot(Rst_Dry_ModList,rs_12,show.nonsig = FALSE,scaling=20)
 
-require(MuMIn)
-r.squaredGLMM(d)
-
-sem.plot(Rst_ModList,rs_122,show.nonsig = FALSE,scaling=20)
-
-resids.df1<-partial.resid(lg2Rst12~lg2SppN,Rst_ModList,data=rs_122,
+resids.df1<-partial.resid(lg2Rst12~lg2SppN,Rst_Dry_ModList,data=rs_12,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-resids.df2<-partial.resid(lg2Rst12~PCAdim1_4trts_12_Yn,Rst_ModList,data=rs_122,
-                          model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
-
-resids.df4<-partial.resid(lg2Rst12~FDis4_12_Yn,Rst_ModList,data=rs_122,
-                         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 
 ##################
