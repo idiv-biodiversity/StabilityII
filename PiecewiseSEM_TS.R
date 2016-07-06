@@ -108,18 +108,11 @@ modList=list(
 sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
+sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #2nd naive model
 
 
-sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
-
-
-sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
-                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~eMNTD"),conditional=T,
-        model.control = list(lmeControl(opt = "optim")))
-
-ts_emntd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMNTD~~FDis4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
-                                                             "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~eMNTD"))
+ts_emntd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4","FDis4 ~~ PCAdim1_4trts"))
 
 sem.missing.paths(modList, stab_4)
 
