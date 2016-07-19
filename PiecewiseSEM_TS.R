@@ -104,14 +104,15 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
 )
 
+[[STOP HERE]]
 sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4"),conditional=T,
+sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #2nd naive model
 
 
-ts_emntd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4"))
+ts_emntd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4","FDis4 ~~ PCAdim1_4trts"))
 
 sem.missing.paths(modList, stab_4)
 
@@ -120,6 +121,7 @@ mf_ts_emntd<-sem.model.fits(modList)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Plot_Asynchrony","Temp_Stability")
 mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN","F-S,eMNTD,Asychrony,FDis4,lg2SppN")
 
+sem.plot(modList,stab_44,show.nonsig = FALSE,scaling=5)
 
 resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_44,list(lmeControl(opt="optim")))
 resids.df2<-partial.resid(TS_lg2~eMNTD,modList,data=stab_44,list(lmeControl(opt="optim")))
@@ -200,15 +202,15 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FDis4+eMPD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
 )
 
-
-sem.fit(modList,stab_44,corr.errors=c("eMPD~~FDis4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
-
-
-sem.fit(modList,stab_44,corr.errors=c("eMPD~~FDis4","FDis4~~PCAdim1_4trts","Plot_Asynchrony~~FDis4"),conditional=T,
+sem.fit(modList,stab_44,corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-ts_empd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMPD~~FDis4","FDis4~~PCAdim1_4trts","Plot_Asynchrony~~FDis4"))
+sem.fit(modList,stab_44,corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
+                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~eMPD"),conditional=T,
+        model.control = list(lmeControl(opt = "optim")))
+
+ts_empd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
+                                                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~eMPD"))
 
 sem.missing.paths(modList, stab_4)
 
@@ -227,7 +229,7 @@ resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_44,list(lmeCont
 
 
 write.table(ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits.csv",sep=",",row.names=F)
 
 #################
 ## ePSE + FDis4 #
@@ -298,15 +300,16 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FDis4+ePSE+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
 )
 
-sem.fit(modList,stab_44,corr.errors=c("ePSE~~FDis4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
 
-
-sem.fit(modList,stab_44,corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~FDis4","Plot_Asynchrony~~ePSE","Plot_Asynchrony~~FDis4"),conditional=T,
+sem.fit(modList,stab_44,corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) # naive model
 
+sem.fit(modList,stab_44,corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
+                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~ePSE"),conditional=T,
+        model.control = list(lmeControl(opt = "optim")))
 
-ts_epse<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~FDis4","Plot_Asynchrony~~ePSE","Plot_Asynchrony~~FDis4"))
+ts_epse<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
+                                                                     "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~ePSE"))
 
 sem.missing.paths(modList, stab_44)
 
@@ -396,14 +399,16 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FRic4+eMPD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
-sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
 
-sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","FRic4~~PCAdim1_4trts","Plot_Asynchrony~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) # naive model
 
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+                                      "Plot_Asynchrony~~FRic4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim")))
 
-ts_empd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FRic4","FRic4~~PCAdim1_4trts","Plot_Asynchrony~~FRic4"))
+ts_empd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+                                                                      "Plot_Asynchrony~~FRic4"))
 
 sem.missing.paths(modList, stab_444)
 
@@ -490,17 +495,16 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FRic4+eMNTD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
 
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) # naive model
 
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~FRic4","Plot_Asynchrony~~eMNTD","Plot_Asynchrony~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) 
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+                                       "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~eMNTD"),conditional=T,
+        model.control = list(lmeControl(opt = "optim")))
 
-
-        
-ts_emntd_fric<-sem.coefs(modList,stab_444,standardize="scale",
-                         corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~FRic4","Plot_Asynchrony~~eMNTD","Plot_Asynchrony~~FRic4"))
+ts_emntd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+                                                                           "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~eMNTD"))
 
 sem.missing.paths(modList, stab_444)
 
@@ -588,15 +592,16 @@ modList=list(
   lme(TS_lg2~PCAdim1_4trts+FRic4+ePSE+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
-sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
 
-sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","FRic4~~PCAdim1_4trts","Plot_Asynchrony~~ePSE","Plot_Asynchrony~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) # naive model
 
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+                                       "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~ePSE"),conditional=T,
+        model.control = list(lmeControl(opt = "optim")))
 
-
-ts_epse_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FRic4","FRic4~~PCAdim1_4trts","Plot_Asynchrony~~ePSE","Plot_Asynchrony~~FRic4"))
+ts_epse_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+                                                                           "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~ePSE"))
 
 sem.missing.paths(modList, stab_444)
 
