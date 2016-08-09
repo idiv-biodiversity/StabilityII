@@ -433,6 +433,7 @@ write.table(wet_rst_fric_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabili
 # eMPD & FRIC  ##
 #################
 
+[STOP HERE]
 
 bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
 cc<-lmeControl(opt="optim")
