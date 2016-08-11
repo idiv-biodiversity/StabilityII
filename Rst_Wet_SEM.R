@@ -244,7 +244,6 @@ resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_12,
 write.table(wet_rst_fdis_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_WET_empd_fdis_sem_coefs_V2.csv",sep=",",row.names=F)
 write.table(wet_rst_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_WET_empd_fdis_model_fits_V2.csv",sep=",",row.names=F)
 
-
 #################
 ## Model 3     ##
 ## FDis $ ePSE ##
@@ -593,3 +592,4 @@ resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_122,
 write.table(wet_rst_fric_epse_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_WET_epse_fric_sem_coefs_V2.csv",sep=",",row.names=F)
 write.table(wet_rst_fric_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_WET_epse_fric_model_fits_V2.csv",sep=",",row.names=F)
 
+#DONE
