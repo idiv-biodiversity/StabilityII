@@ -79,6 +79,7 @@ x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
 
 a<-lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
 a1<-lme(Yn_eMNTD~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
+
 AIC(a,a1)
 
 re<-resid(a, type="normalized")
