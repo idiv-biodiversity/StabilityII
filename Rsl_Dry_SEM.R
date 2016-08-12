@@ -18,7 +18,7 @@ rs_rl<-filter(rs_rl,Climate_Bin=="SPEI12")
 rs_rll<-filter(rs_rl,Value=="Dry")
 
 ##################
-## Dry ###
+## Dry ###########
 ##################
 
 
@@ -231,7 +231,12 @@ qqnorm(d)
 ####################
 # fit SEMs #########
 ####################
+bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
+cc<-lmeControl(opt="optim")
 
+
+x1=corAR1(form=~ExpYear |Site/PlotUnique2)
+x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
 
 ####################
 # Model 1         ##
@@ -240,90 +245,46 @@ qqnorm(d)
 
 
 
-Rst_Wet_ModList=list(
-  lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
-  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
-  lme(lg2Rst12~Yn_PCAcwm4trts+lg2SppN+Yn_eMNTD+Yn_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+Rsl_Dry_ModList=list(
+  lme(Ye_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
+  lme(Ye_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
+  lme(lg2Rsl12~Ye_PCAcwm4trts+lg2SppN+Ye_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
   
 )
 
-sem.fit(Rst_Wet_ModList,rs_12,corr.errors=c("Yn_eMNTD~~Yn_FDis4"),conditional=T,
+sem.fit(Rsl_Dry_ModList,rs_12,corr.errors=c("Ye_eMNTD~~Ye_FDis4"),conditional=T,
+        model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
+
+#Naive Model
+
+
+sem.fit(Rsl_Dry_ModList,rs_12,corr.errors=c("Ye_eMNTD~~Ye_FDis4","Ye_FDis4 ~~ Ye_PCAcwm4trts","Ye_eMNTD ~~ Ye_PCAcwm4trts"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 
-#sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale",corr.errors=c("Yn_eMNTD~~Yn_FDis4","Yn_FDis4~~Yn_PCAcwm4trts"))
-
-wet_rst_fdis_emntd_pc<- sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale")
-wet_rst_fdis_emntd_pc$Climate_Bin<-"Extreme Wet"
+dry_rsl_fdis_emntd_pc<- sem.coefs(Rsl_Dry_ModList,rs_12,standardize="scale")
+dry_rsl_fdis_emntd_pc$Climate_Bin<-"Dry"
 
 
-wet_rst_fdis_emntd_modfit<-sem.model.fits(Rst_Wet_ModList)
+dry_rsl_fdis_emntd_modfit<-sem.model.fits(Rsl_Dry_ModList)
 
-wet_rst_fdis_emntd_modfit$ResponseVars<-c("eMNTD","FDis4","Resistance")
-wet_rst_fdis_emntd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Yn_FDis4,eMNTD,lg2SppN")
-wet_rst_fdis_emntd_modfit$Climate_Bin<-"Extreme Wet"
+dry_rsl_fdis_emntd_modfit$ResponseVars<-c("eMNTD","FDis4","Resistance")
+dry_rsl_fdis_emntd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,FDis4,lg2SppN")
+dry_rsl_fdis_emntd_modfit$Climate_Bin<-"Dry"
 
 #sem.plot(Rst_Dry_ModList,rs_12,show.nonsig = FALSE,scaling=20)
 
-resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_12,
+resids.df1<-partial.resid(lg2Rsl12~Ye_PCAcwm4trts,Rsl_Dry_ModList,data=rs_12,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fdis_emntd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(dry_rsl_fdis_emntd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_emntd_fdis_sem_coefs_V2.csv",sep=",",row.names=F)
+write.table(dry_rsl_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_emntd_fdis_model_fits_V2.csv",sep=",",row.names=F)
 
 
 #################
 # Model 2      ##
 # eMPD & FDis  ##
 #################
-
-
-bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
-cc<-lmeControl(opt="optim")
-
-
-x1=corAR1(form=~ExpYear |Site/PlotUnique2)
-x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
-
-
-a<-lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
-a1<-lme(Yn_eMPD~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-
-b<-lme(Yn_FDis4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-b1<-lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-c<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-c1<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
 
 
 Rst_Wet_ModList=list(
@@ -362,53 +323,6 @@ write.table(wet_rst_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabilit
 ## Model 3     ##
 ## FDis $ ePSE ##
 #################
-
-
-bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
-cc<-lmeControl(opt="optim")
-
-
-x1=corAR1(form=~ExpYear |Site/PlotUnique2)
-x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
-
-
-a<-lme(Yn_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
-a1<-lme(Yn_ePSE~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-b<-lme(Yn_FDis4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-b1<-lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-c<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-c1<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
 
 
 Rst_Wet_ModList=list(
@@ -455,52 +369,6 @@ write.table(wet_rst_fdis_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabilit
 ####################
 
 
-bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
-cc<-lmeControl(opt="optim")
-
-
-x1=corAR1(form=~ExpYear |Site/PlotUnique2)
-x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
-
-
-a<-lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-a1<-lme(Yn_eMNTD~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-b<-lme(Yn_FRic4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-b1<-lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-c<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-c1<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-
-
 Rst_Wet_ModList=list(
   lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
   lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
@@ -544,53 +412,6 @@ write.table(wet_rst_fric_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabili
 
 
 
-bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
-cc<-lmeControl(opt="optim")
-
-
-x1=corAR1(form=~ExpYear |Site/PlotUnique2)
-x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
-
-
-a<-lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-a1<-lme(Yn_eMPD~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-b<-lme(Yn_FRic4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-b1<-lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-c<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-c1<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-
-
 Rst_Wet_ModList=list(
   lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
   lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
@@ -628,43 +449,6 @@ write.table(wet_rst_fric_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabilit
 ## Model 6    ###
 ## FDis $ ePSE ##
 #################
-
-bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
-cc<-lmeControl(opt="optim")
-
-
-x1=corAR1(form=~ExpYear |Site/PlotUnique2)
-x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
-
-
-a<-lme(Yn_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-a1<-lme(Yn_ePSE~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-b<-lme(Yn_FRic4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-b1<-lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-
 
 Rst_Wet_ModList=list(
   lme(Yn_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
