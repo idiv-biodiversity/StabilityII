@@ -286,6 +286,7 @@ write.table(dry_rsl_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabili
 # eMPD & FDis  ##
 #################
 
+[STOP HERE]
 
 Rst_Wet_ModList=list(
   lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
