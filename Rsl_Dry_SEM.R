@@ -21,7 +21,6 @@ rs_rll<-filter(rs_rl,Value=="Dry")
 ## Dry ###########
 ##################
 
-
 rs_rll$Value<-droplevels(rs_rll$Value)
 rs_12<-select(rs_rll,Climate_Bin, Value,Dir, Int,ExpYear,Site,BlockUnique,PlotUnique,PlotUnique2,SppN,Ye_FRic4,Ye_FDis4,Ye_eMPD, Ye_eMNTD, Ye_ePSE,Ye_PCAcwm4trts,
               Ye_PlotBiomass,Ye1_PlotBiomass,Rsl_Plot)
@@ -243,8 +242,6 @@ x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
 # eMNTD + FDis #####
 ####################
 
-
-
 Rsl_Dry_ModList=list(
   lme(Ye_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
   lme(Ye_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
@@ -286,39 +283,42 @@ write.table(dry_rsl_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabili
 # eMPD & FDis  ##
 #################
 
-[STOP HERE]
 
-Rst_Wet_ModList=list(
-  lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
-  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
-  lme(lg2Rst12~Yn_eMPD+Yn_PCAcwm4trts+lg2SppN+Yn_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+
+Rsl_Dry_ModList=list(
+  lme(Ye_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
+  lme(Ye_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
+  lme(lg2Rsl12~Ye_eMPD+Ye_PCAcwm4trts+lg2SppN+Ye_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
   
 )
 
-sem.fit(Rst_Wet_ModList,rs_12,corr.errors=c("Yn_eMPD~~Yn_FDis4"),conditional=T,
+sem.fit(Rsl_Dry_ModList,rs_12,corr.errors=c("Ye_eMPD~~Ye_FDis4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
 
+sem.fit(Rsl_Dry_ModList,rs_12,corr.errors=c("Ye_eMPD~~Ye_FDis4","Ye_FDis4 ~~ Ye_PCAcwm4trts"),conditional=T,
+        model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
+
 
 # no further changes
-wet_rst_fdis_empd_pc<- sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale")
-wet_rst_fdis_empd_pc$Climate_Bin<-"Extreme Wet"
+dry_rsl_fdis_empd_pc<- sem.coefs(Rsl_Dry_ModList,rs_12,standardize="scale")
+dry_rsl_fdis_empd_pc$Climate_Bin<-"Dry"
 
 
-wet_rst_fdis_empd_modfit<-sem.model.fits(Rst_Wet_ModList)
+dry_rsl_fdis_empd_modfit<-sem.model.fits(Rsl_Dry_ModList)
 
-wet_rst_fdis_empd_modfit$ResponseVars<-c("Yn_eMPD","FDis4","Resistance")
-wet_rst_fdis_empd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Yn_eMPD,FDis4,lg2SppN")
-wet_rst_fdis_empd_modfit$Climate_Bin<-"Extreme Wet"
+dry_rsl_fdis_empd_modfit$ResponseVars<-c("Ye_eMPD","FDis4","Resilience")
+dry_rsl_fdis_empd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Ye_eMPD,FDis4,lg2SppN")
+dry_rsl_fdis_empd_modfit$Climate_Bin<-"Dry"
 
 sem.plot(Rst_Dry_ModList,rs_12,show.nonsig = FALSE,scaling=20)
 
 resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_12,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fdis_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(dry_rsl_fdis_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_empd_fdis_sem_coefs.csv",sep=",",row.names=F)
+write.table(dry_rsl_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_empd_fdis_model_fits.csv",sep=",",row.names=F)
 
 #################
 ## Model 3     ##
@@ -326,39 +326,43 @@ write.table(wet_rst_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabilit
 #################
 
 
-Rst_Wet_ModList=list(
-  lme(Yn_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
-  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
-  lme(lg2Rst12~Yn_FDis4+Yn_PCAcwm4trts+lg2SppN+Yn_ePSE,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+Rsl_Dry_ModList=list(
+  lme(Ye_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
+  lme(Ye_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
+  lme(lg2Rsl12~Ye_FDis4+Ye_PCAcwm4trts+lg2SppN+Ye_ePSE,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
   
 )
 
 
-sem.fit(Rst_Wet_ModList,rs_12,corr.errors=c("Yn_ePSE~~Yn_FDis4"),conditional=T,
+sem.fit(Rsl_Dry_ModList,rs_12,corr.errors=c("Ye_ePSE~~Ye_FDis4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
 
 
+sem.fit(Rsl_Dry_ModList,rs_12,corr.errors=c("Ye_ePSE~~Ye_FDis4","Ye_FDis4 ~~ Ye_PCAcwm4trts"),conditional=T,
+        model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
+
+
 
 # no further changes
 
-wet_rst_fdis_epse_pc<- sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale")
-wet_rst_fdis_epse_pc$Climate_Bin<-"Extreme Wet"
+dry_rsl_fdis_epse_pc<- sem.coefs(Rsl_Dry_ModList,rs_12,standardize="scale")
+dry_rsl_fdis_epse_pc$Climate_Bin<-"Dry"
 
-wet_rst_fdis_epse_modfit<-sem.model.fits(Rst_Wet_ModList)
+dry_rsl_fdis_epse_modfit<-sem.model.fits(Rsl_Dry_ModList)
 
-wet_rst_fdis_epse_modfit$ResponseVars<-c("Yn_ePSE","FDis4","Resistance")
-wet_rst_fdis_epse_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,FDis4,Yn_ePSE,lg2SppN")
-wet_rst_fdis_epse_modfit$Climate_Bin<-"Extreme Wet"
+dry_rsl_fdis_epse_modfit$ResponseVars<-c("Ye_ePSE","FDis4","Resilience")
+dry_rsl_fdis_epse_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,FDis4,Yn_ePSE,lg2SppN")
+dry_rsl_fdis_epse_modfit$Climate_Bin<-"Extreme Wet"
 
 sem.plot(Rst_Wet_ModList,rs_12,show.nonsig = FALSE,scaling=20)
 
 resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_12,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fdis_epse_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_epse_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fdis_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_epse_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(dry_rsl_fdis_epse_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_epse_fdis_sem_coefs.csv",sep=",",row.names=F)
+write.table(dry_rsl_fdis_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_epse_fdis_model_fits.csv",sep=",",row.names=F)
 
 ############
 # FRic4 ####
@@ -370,14 +374,14 @@ write.table(wet_rst_fdis_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabilit
 ####################
 
 
-Rst_Wet_ModList=list(
-  lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
-  lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
-  lme(lg2Rst12~Yn_PCAcwm4trts+lg2SppN+Yn_eMNTD+Yn_FRic4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+Rsl_Dry_ModList=list(
+  lme(Ye_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
+  lme(Ye_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
+  lme(lg2Rsl12~Ye_PCAcwm4trts+lg2SppN+Ye_eMNTD+Ye_FRic4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
   
 )
 
-sem.fit(Rst_Wet_ModList,rs_122,corr.errors=c("Yn_eMNTD~~Yn_FRic4"),conditional=T,
+sem.fit(Rsl_Dry_ModList,rs_122,corr.errors=c("Ye_eMNTD~~Ye_FRic4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
@@ -387,24 +391,24 @@ sem.fit(Rst_Wet_ModList,rs_122,corr.errors=c("Yn_eMNTD~~Yn_FRic4"),conditional=T
 
 #sem.coefs(Rst_Dry_ModList,rs_122,standardize="scale",corr.errors=c("Yn_eMNTD~~Yn_FRic4"))
 
-sem.coefs(Rst_Wet_ModList,rs_122,standardize="scale")
+sem.coefs(Rsl_Dry_ModList,rs_122,standardize="scale")
 
-wet_rst_fric_emntd_pc<- sem.coefs(Rst_Wet_ModList,rs_122,standardize="scale")
-wet_rst_fric_emntd_pc$Climate_Bin<-"Extreme Wet"
+dry_rsl_fric_emntd_pc<- sem.coefs(Rsl_Dry_ModList,rs_122,standardize="scale")
+dry_rsl_fric_emntd_pc$Climate_Bin<-"Dry"
 
-wet_rst_fric_emntd_modfit<-sem.model.fits(Rst_Wet_ModList)
+dry_rsl_fric_emntd_modfit<-sem.model.fits(Rsl_Dry_ModList)
 
-wet_rst_fric_emntd_modfit$ResponseVars<-c("eMNTD","FRic4","Resistance")
-wet_rst_fric_emntd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,eMNTD,FRic4,lg2SppN")
-wet_rst_fric_emntd_modfit$Climate_Bin<-"Extreme Wet"
+dry_rsl_fric_emntd_modfit$ResponseVars<-c("eMNTD","FRic4","Resilience")
+dry_rsl_fric_emntd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,eMNTD,FRic4,lg2SppN")
+dry_rsl_fric_emntd_modfit$Climate_Bin<-"Dry"
 
 sem.plot(Rst_Dry_ModList,rs_122,show.nonsig = FALSE,scaling=20)
 
 resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_122,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fric_emntd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fric_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fric_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fric_model_fits.csv",sep=",",row.names=F)
+write.table(dry_rsl_fric_emntd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_emntd_fric_sem_coefs.csv",sep=",",row.names=F)
+write.table(dry_rsl_fric_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_emntd_fric_model_fits.csv",sep=",",row.names=F)
 
 #################
 # Model 5 #######
@@ -413,37 +417,35 @@ write.table(wet_rst_fric_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabili
 
 
 
-Rst_Wet_ModList=list(
-  lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
-  lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
-  lme(lg2Rst12~Yn_PCAcwm4trts+lg2SppN+Yn_eMPD+Yn_FRic4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+Rsl_Wet_ModList=list(
+  lme(Ye_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
+  lme(Ye_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
+  lme(lg2Rsl12~Ye_PCAcwm4trts+lg2SppN+Ye_eMPD+Ye_FRic4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
   
 )
 
-sem.fit(Rst_Wet_ModList,rs_122,corr.errors=c("Yn_eMPD~~Yn_FRic4"),conditional=T,
+sem.fit(Rsl_Wet_ModList,rs_122,corr.errors=c("Ye_eMPD~~Ye_FRic4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
 
-
-
 # no further changes
 
-wet_rst_fric_empd_pc<- sem.coefs(Rst_Wet_ModList,rs_122,standardize="scale")
-wet_rst_fric_empd_pc$Climate_Bin<-"Extreme Wet"
+dry_rsl_fric_empd_pc<- sem.coefs(Rsl_Wet_ModList,rs_122,standardize="scale")
+dry_rsl_fric_empd_pc$Climate_Bin<-"Dry"
 
-wet_rst_fric_empd_modfit<-sem.model.fits(Rst_Wet_ModList)
-wet_rst_fric_empd_modfit$ResponseVars<-c("Yn_eMPD","FRic4","Resistance")
-wet_rst_fric_empd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Yn_eMPD,FRic4,lg2SppN")
-wet_rst_fric_empd_modfit$Climate_Bin<-"Extreme Wet"
+dry_rsl_fric_empd_modfit<-sem.model.fits(Rsl_Wet_ModList)
+dry_rsl_fric_empd_modfit$ResponseVars<-c("Yn_eMPD","FRic4","Resilience")
+dry_rsl_fric_empd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Ye_eMPD,FRic4,lg2SppN")
+dry_rsl_fric_empd_modfit$Climate_Bin<-"Dry"
 
 sem.plot(Rst_Dry_ModList,rs_122,show.nonsig = FALSE,scaling=20)
 
 resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_122,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fric_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fric_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fric_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fric_model_fits.csv",sep=",",row.names=F)
+write.table(dry_rsl_fric_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_empd_fric_sem_coefs.csv",sep=",",row.names=F)
+write.table(dry_rsl_fric_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_empd_fric_model_fits.csv",sep=",",row.names=F)
 
 
 #################
@@ -451,32 +453,32 @@ write.table(wet_rst_fric_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabilit
 ## FDis $ ePSE ##
 #################
 
-Rst_Wet_ModList=list(
-  lme(Yn_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
-  lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
-  lme(lg2Rst12~Yn_PCAcwm4trts+lg2SppN+Yn_ePSE+Yn_FRic4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+Rsl_Dry_ModList=list(
+  lme(Ye_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
+  lme(Ye_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
+  lme(lg2Rsl12~Ye_PCAcwm4trts+lg2SppN+Ye_ePSE+Ye_FRic4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
   
 )
 
 
-sem.fit(Rst_Wet_ModList,rs_122,corr.errors=c("Yn_ePSE~~Yn_FRic4"),conditional=T,
+sem.fit(Rsl_Dry_ModList,rs_122,corr.errors=c("Ye_ePSE~~Ye_FRic4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
 
-wet_rst_fric_epse_pc<- sem.coefs(Rst_Wet_ModList,rs_122,standardize="scale")
-wet_rst_fric_epse_pc$Climate_Bin<-"Extreme Wet"
+dry_rsl_fric_epse_pc<- sem.coefs(Rsl_Dry_ModList,rs_122,standardize="scale")
+dry_rsl_fric_epse_pc$Climate_Bin<-"Dry"
 
-wet_rst_fric_epse_modfit<-sem.model.fits(Rst_Wet_ModList)
-wet_rst_fric_epse_modfit$ResponseVars<-c("Yn_ePSE","FRic4","Resistance")
-wet_rst_fric_epse_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Yn_ePSE,FRic4,lg2SppN")
-wet_rst_fric_epse_modfit$Climate_Bin<-"Extreme Wet"
+dry_rsl_fric_epse_modfit<-sem.model.fits(Rsl_Dry_ModList)
+dry_rsl_fric_epse_modfit$ResponseVars<-c("Ye_ePSE","FRic4","Resilience")
+dry_rsl_fric_epse_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Ye_ePSE,FRic4,lg2SppN")
+dry_rsl_fric_epse_modfit$Climate_Bin<-"Dry"
 
 
 resids.df1<-partial.resid(lg2Rst12~Yn_ePSE,Rst_Wet_ModList,data=rs_122,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fric_epse_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_epse_fric_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fric_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_epse_fric_model_fits.csv",sep=",",row.names=F)
+write.table(dry_rsl_fric_epse_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_epse_fric_sem_coefs.csv",sep=",",row.names=F)
+write.table(dry_rsl_fric_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_epse_fric_model_fits.csv",sep=",",row.names=F)
 
 #DONE
