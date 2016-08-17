@@ -490,4 +490,4 @@ resids.df1<-partial.resid(lg2Rsl12~Ye_ePSE,Rsl_Wet_ModList,data=rs_122,
 write.table(wet_rsl_fric_epse_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_WET_epse_fric_sem_coefs_V1.csv",sep=",",row.names=F)
 write.table(wet_rsl_fric_epse_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_WET_epse_fric_model_fits_V1.csv",sep=",",row.names=F)
 
-#DONE
+#DONE!
