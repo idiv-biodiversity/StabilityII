@@ -287,7 +287,7 @@ write.table(wet_rsl_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/Stabili
 Rsl_Wet_ModList=list(
   lme(Ye_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
   lme(Ye_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
-  lme(lg2Rsl12~Ye_eMPD+Ye_PCAcwm4trts+lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+  lme(lg2Rsl12~Ye_FDis4+Ye_PCAcwm4trts+lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
   
 )
 
@@ -307,7 +307,7 @@ wet_rsl_fdis_empd_pc$Climate_Bin<-"Wet"
 wet_rsl_fdis_empd_modfit<-sem.model.fits(Rsl_Wet_ModList)
 
 wet_rsl_fdis_empd_modfit$ResponseVars<-c("Ye_eMPD","FDis4","Resilience")
-wet_rsl_fdis_empd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Ye_eMPD,FDis4,lg2SppN")
+wet_rsl_fdis_empd_modfit$PredVars<-c("lg2SppN","lg2SppN","F-S,Ye_eMPD,lg2SppN")
 wet_rsl_fdis_empd_modfit$Climate_Bin<-"Wet"
 
 sem.plot(Rst_Dry_ModList,rs_12,show.nonsig = FALSE,scaling=20)
