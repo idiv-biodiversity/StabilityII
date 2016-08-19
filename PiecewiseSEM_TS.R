@@ -42,8 +42,8 @@ bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod=
 cc<-lmeControl(opt="optim")
 
 
-a<-lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-a1<-lme(eMNTD~lg2SppN,random=~1|Site,control=cc,data=stab_44)
+a<-lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+a1<-lme(eMNTD~lg2SppN,random=~1|Site,control=cc,data=stab_444)
 AIC(a,a1)
 
 
@@ -98,23 +98,21 @@ qqline(stab_44$TS_lg2)
 
 
 modList=list(
-  lme(eMNTD~lg2SppN,random=~1|Site,control=cc,data=stab_44),
-  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44),
-  lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
+  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
-[[STOP HERE]]
-sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4"),conditional=T,
+
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-sem.fit(modList,stab_44,corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","FDis4 ~~ PCAdim1_4trts"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #2nd naive model
 
 
-ts_emntd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","Plot_Asynchrony ~~ FDis4","FDis4 ~~ PCAdim1_4trts"))
-
-sem.missing.paths(modList, stab_4)
+ts_emntd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4","Plot_Asynchrony ~~ eMNTD","FDis4 ~~ PCAdim1_4trts"))
 
 
 mf_ts_emntd<-sem.model.fits(modList)
@@ -126,12 +124,12 @@ sem.plot(modList,stab_44,show.nonsig = FALSE,scaling=5)
 resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_44,list(lmeControl(opt="optim")))
 resids.df2<-partial.resid(TS_lg2~eMNTD,modList,data=stab_44,list(lmeControl(opt="optim")))
 resids.df3<-partial.resid(TS_lg2~FDis4,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_44,list(lmeControl(opt="optim")))
+resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_444,list(lmeControl(opt="optim")))
+resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
 
 
-write.table(ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_NEW.csv",sep=",",row.names=F)
 
 
 ###############
@@ -142,77 +140,24 @@ bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod=
 cc<-lmeControl(opt="optim")
 
 
-a<-lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-a1<-lme(eMPD~lg2SppN,random=~1|Site,control=cc,data=stab_44)
-AIC(a,a1)
-
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$eMPD)
-qqline(stab_44$eMPD)   ## use the log data
-
-
-b<-lme(FDis4~lg2SppN,random=~1|Site, control=cc,data=stab_44)
-b1<-lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-AIC(b,b1)
-
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$FDis4)
-qqline(stab_44$FDis4)   ## use the log data
-
-
-c<-lme(Plot_Asynchrony~lg2SppN,random=~1|Site,control=cc,data=stab_44)
-c1<-lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$Plot_Asynchrony)
-qqline(stab_44$Plot_Asynchrony)   ## use the log data
-
-d<-lme(TS_lg2~lg2SppN+PCAdim1_4trts+FDis4+eMPD+Plot_Asynchrony,random=~1|Site, control=cc,data=stab_44)
-d1<-lme(TS_lg2~lg2SppN+PCAdim1_4trts+FDis4+eMPD+Plot_Asynchrony,random=~1+lg2SppN|Site, control=cc,data=stab_44)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$TS_lg2)
-qqline(stab_44$TS_lg2)   
+qqnorm(stab_444$TS_lg2)
+qqline(stab_444$TS_lg2)   
 
 
 modList=list(
-  lme(eMPD~lg2SppN,random=~1|Site,control=cc,data=stab_44),
-  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44),
-  lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+eMPD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
+  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FDis4+eMPD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
-sem.fit(modList,stab_44,corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-sem.fit(modList,stab_44,corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
-                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~eMPD"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-ts_empd<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
-                                                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~eMPD"))
-
-sem.missing.paths(modList, stab_4)
+ts_empd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FDis4","PCAdim1_4trts~~FDis4"))
 
 
 mf_ts_empd<-sem.model.fits(modList)
@@ -224,12 +169,12 @@ sem.plot(modList,stab_44,show.nonsig = FALSE,scaling=5)
 resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_44,list(lmeControl(opt="optim")))
 resids.df2<-partial.resid(TS_lg2~eMPD,modList,data=stab_44,list(lmeControl(opt="optim")))
 resids.df3<-partial.resid(TS_lg2~FDis4,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_44,list(lmeControl(opt="optim")))
+resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_444,list(lmeControl(opt="optim")))
+resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
 
 
-write.table(ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits_NEW.csv",sep=",",row.names=F)
 
 #################
 ## ePSE + FDis4 #
@@ -240,78 +185,37 @@ bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod=
 cc<-lmeControl(opt="optim")
 
 
-a<-lme(ePSE~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-a1<-lme(ePSE~lg2SppN,random=~1|Site,control=cc,data=stab_44)
+a<-lme(ePSE~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+a1<-lme(ePSE~lg2SppN,random=~1|Site,control=cc,data=stab_444)
 AIC(a,a1)
 
 
 re<-resid(a, type="normalized")
 fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
+plot(x=stab_444$lg2SppN,y=re,xlab="SppN",ylab="residuals")
 
-qqnorm(stab_44$eMPD)
-qqline(stab_44$eMPD)   ## use the log data
+qqnorm(a)
+plot(a)
 
-
-b<-lme(FDis4~lg2SppN,random=~1|Site, control=cc,data=stab_44)
-b1<-lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-AIC(b,b1)
-
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$FDis4)
-qqline(stab_44$FDis4)   ## use the log data
-
-
-c<-lme(Plot_Asynchrony~lg2SppN,random=~1|Site,control=cc,data=stab_44)
-c1<-lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$Plot_Asynchrony)
-qqline(stab_44$Plot_Asynchrony)   ## use the log data
-
-d<-lme(TS_lg2~lg2SppN+PCAdim1_4trts+FDis4+ePSE+Plot_Asynchrony,random=~1|Site, control=cc,data=stab_44)
-d1<-lme(TS_lg2~lg2SppN+PCAdim1_4trts+FDis4+ePSE+Plot_Asynchrony,random=~1+lg2SppN|Site, control=cc,data=stab_44)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_44$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$TS_lg2)
-qqline(stab_44$TS_lg2)   
-
+qqnorm(stab_444$ePSE)
+qqline(stab_444$ePSE)
 
 modList=list(
-  lme(ePSE~lg2SppN,random=~1|Site,control=cc,data=stab_44),
-  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44),
-  lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_44),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+ePSE+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_44)
+  lme(ePSE~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FDis4+ePSE+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
-sem.fit(modList,stab_44,corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) # naive model
 
-sem.fit(modList,stab_44,corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
-                                      "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~ePSE"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FDis4"," Plot_Asynchrony ~~ ePSE","PCAdim1_4trts~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-ts_epse<-sem.coefs(modList,stab_44,standardize="scale",corr.errors=c("ePSE~~FDis4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FDis4","PCAdim1_4trts~~lg2SppN",
-                                                                     "Plot_Asynchrony~~FDis4","Plot_Asynchrony~~ePSE"))
+ts_epse<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FDis4"," Plot_Asynchrony ~~ ePSE","PCAdim1_4trts~~FDis4"))
 
-sem.missing.paths(modList, stab_44)
 
 
 mf_ts_epse<-sem.model.fits(modList)
@@ -320,15 +224,15 @@ mf_ts_epse$PredVars<-c("lg2SppN","lg2SppN","lg2SppN","F-S,ePSE,Asychrony,FDis4,l
 
 sem.plot(modList,stab_44,show.nonsig = FALSE,scaling=5)
 
-resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df2<-partial.resid(TS_lg2~ePSE,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df3<-partial.resid(TS_lg2~FDis4,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_44,list(lmeControl(opt="optim")))
-resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_44,list(lmeControl(opt="optim")))
+resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_444,list(lmeControl(opt="optim")))
+resids.df2<-partial.resid(TS_lg2~ePSE,modList,data=stab_444,list(lmeControl(opt="optim")))
+resids.df3<-partial.resid(TS_lg2~FDis4,modList,data=stab_444,list(lmeControl(opt="optim")))
+resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_444,list(lmeControl(opt="optim")))
+resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
 
 
-write.table(ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empse_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empse_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empse_fdis_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(mf_ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empse_fdis_model_fits_NEW.csv",sep=",",row.names=F)
 
 ################
 # eMPD +FRic4  #
@@ -393,22 +297,21 @@ qqline(stab_444$TS_lg2)
 
 
 modList=list(
-  lme(eMPD~lg2SppN,random=~1|Site,control=cc,data=stab_444),
+  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(TS_lg2~PCAdim1_4trts+FRic4+eMPD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
-sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) # naive model
 
-sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
-                                      "Plot_Asynchrony~~FRic4"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~FRic4","Plot_Asynchrony~~FRic4"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-ts_empd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~eMPD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
-                                                                      "Plot_Asynchrony~~FRic4"))
+
+ts_empd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FRic4","PCAdim1_4trts~~FRic4","Plot_Asynchrony~~FRic4"))
 
 sem.missing.paths(modList, stab_444)
 
@@ -426,8 +329,8 @@ resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_444,list(lmeC
 resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
 
 
-write.table(ts_empd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_empd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits.csv",sep=",",row.names=F)
+write.table(ts_empd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(mf_empd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_NEW.csv",sep=",",row.names=F)
 
 ##################
 # eMNTD + FRic4  #
@@ -489,22 +392,22 @@ qqline(stab_444$TS_lg2)
 
 
 modList=list(
-  lme(eMNTD~lg2SppN,random=~1|Site,control=cc,data=stab_444),
+  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(TS_lg2~PCAdim1_4trts+FRic4+eMNTD+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) # naive model
 
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~FRic4",
                                        "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~eMNTD"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-ts_emntd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~eMNTD","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
-                                                                           "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~eMNTD"))
+ts_emntd_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FRic4","PCAdim1_4trts~~FRic4",
+                                                                            "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~eMNTD"))
 
 sem.missing.paths(modList, stab_444)
 
@@ -522,8 +425,8 @@ resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_444,list(lmeC
 resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
 
 
-write.table(ts_emntd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_emntd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits.csv",sep=",",row.names=F)
+write.table(ts_emntd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(mf_emntd_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_NEW.csv",sep=",",row.names=F)
 
 ###################
 ## ePSE & FRic ####
@@ -548,59 +451,23 @@ qqnorm(stab_444$eMNTD)
 qqline(stab_444$eMNTD)   ## use the log data
 
 
-b<-lme(FRic4~lg2SppN,random=~1|Site, control=cc,data=stab_444)
-b1<-lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_444$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_444$FRic4)
-qqline(stab_444$FRic4)   ## use the log data
-
-c<-lme(Plot_Asynchrony~lg2SppN,random=~1|Site,control=cc,data=stab_444)
-c1<-lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_444$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_44$Plot_Asynchrony)
-qqline(stab_44$Plot_Asynchrony)   ## use the log data
-
-d<-lme(TS_lg2~lg2SppN+PCAdim1_4trts+FRic4+ePSE+Plot_Asynchrony,random=~1|Site, control=cc,data=stab_444)
-d1<-lme(TS_lg2~lg2SppN+PCAdim1_4trts+FRic4+ePSE+Plot_Asynchrony,random=~1+lg2SppN|Site, control=cc,data=stab_444)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_444$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-qqnorm(stab_444$TS_lg2)
-qqline(stab_444$TS_lg2)   
-
 
 modList=list(
-  lme(ePSE~lg2SppN,random=~1|Site,control=cc,data=stab_444),
+  lme(ePSE~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(TS_lg2~PCAdim1_4trts+FRic4+ePSE+Plot_Asynchrony+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
-sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) # naive model
 
-sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~FRic4",
                                        "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~ePSE"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))
 
-ts_epse_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~ePSE","PCAdim1_4trts~~FRic4","PCAdim1_4trts~~lg2SppN",
+ts_epse_fric<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FRic4","PCAdim1_4trts~~FRic4",
                                                                            "Plot_Asynchrony~~FRic4","Plot_Asynchrony~~ePSE"))
 
 sem.missing.paths(modList, stab_444)
@@ -619,6 +486,6 @@ resids.df4<-partial.resid(TS_lg2~Plot_Asynchrony,modList,data=stab_444,list(lmeC
 resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
 
 
-write.table(ts_epse_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_sem_coefs.csv",sep=",",row.names=F)
-write.table(mf_epse_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_model_fits.csv",sep=",",row.names=F)
+write.table(ts_epse_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(mf_epse_fric,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_model_fits_NEW.csv",sep=",",row.names=F)
 
