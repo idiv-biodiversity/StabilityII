@@ -102,8 +102,8 @@ plot(x=fi,y=re,xlab="fitted values",ylab="residuals")
 plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
 
 
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
+d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FDis4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
 AIC(d,d1)
 
 re<-resid(d1, type="normalized")
@@ -365,44 +365,6 @@ x1=corAR1(form=~ExpYear |Site/PlotUnique2)
 x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
 
 
-a<-lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-a1<-lme(Yn_eMPD~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-b<-lme(Yn_FRic4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-b1<-lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-c<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-c1<-lme(Yn_PCAcwm4trts~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(c,c1)
-
-re<-resid(c1, type="normalized")
-fi<-fitted(c1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-
 
 Rst_Dry_ModList=list(
   lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
@@ -412,12 +374,8 @@ Rst_Dry_ModList=list(
 )
 
 sem.fit(Rst_Dry_ModList,rs_122,corr.errors=c("Yn_eMPD~~Yn_FRic4"),conditional=T,
-<<<<<<< HEAD:Rst_Dry_SEM.R
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-#Naive Model
-=======
-        model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
 
@@ -451,35 +409,6 @@ cc<-lmeControl(opt="optim")
 
 x1=corAR1(form=~ExpYear |Site/PlotUnique2)
 x2=corCompSymm(form=~ExpYear |Site/PlotUnique2)
-
-
-a<-lme(Yn_ePSE~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-a1<-lme(Yn_ePSE~lg2SppN,random=~1|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122)
-AIC(a,a1)
-
-re<-resid(a, type="normalized")
-fi<-fitted(a)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_122$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-b<-lme(Yn_FRic4~lg2SppN,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-b1<-lme(Yn_FRic4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(b,b1)
-
-re<-resid(b1, type="normalized")
-fi<-fitted(b1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=rs_12$lg2SppN,y=re,xlab="SppN",ylab="residuals")
-
-
-d<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-d1<-lme(lg2Rst12~lg2SppN+Yn_PCAcwm4trts+Yn_FRic4+Yn_eMNTD,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
-AIC(d,d1)
-
-re<-resid(d1, type="normalized")
-fi<-fitted(d1)  
-plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
 
 
 Rst_Dry_ModList=list(
