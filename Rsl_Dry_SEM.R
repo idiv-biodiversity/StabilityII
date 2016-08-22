@@ -388,7 +388,6 @@ sem.fit(Rsl_Dry_ModList,rs_122,corr.errors=c("Ye_eMNTD~~Ye_FRic4"),conditional=T
 
 # no further changes
 
-#sem.coefs(Rst_Dry_ModList,rs_122,standardize="scale",corr.errors=c("Yn_eMNTD~~Yn_FRic4"))
 
 sem.coefs(Rsl_Dry_ModList,rs_122,standardize="scale")
 
