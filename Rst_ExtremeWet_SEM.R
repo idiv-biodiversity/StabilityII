@@ -119,19 +119,19 @@ plot(x=fi,y=re,xlab="fitted values",ylab="residuals")
 
 
 Rst_Wet_ModList=list(
-  lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
-  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
-  lme(lg2Rst12~Yn_PCAcwm4trts+lg2SppN+Yn_eMNTD+Yn_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+  lme(Yn_eMNTD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
+  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
+  lme(lg2Rst12~Yn_PCAcwm4trts+lg2SppN+Yn_eMNTD+Yn_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
   
 )
 
-sem.fit(Rst_Wet_ModList,rs_12,corr.errors=c("Yn_eMNTD~~Yn_FDis4"),conditional=T,
+sem.fit(Rst_Wet_ModList,rs_122,corr.errors=c("Yn_eMNTD~~Yn_FDis4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 
 #sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale",corr.errors=c("Yn_eMNTD~~Yn_FDis4","Yn_FDis4~~Yn_PCAcwm4trts"))
 
-wet_rst_fdis_emntd_pc<- sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale")
+wet_rst_fdis_emntd_pc<- sem.coefs(Rst_Wet_ModList,rs_122,standardize="scale")
 wet_rst_fdis_emntd_pc$Climate_Bin<-"Extreme Wet"
 
 
@@ -146,8 +146,8 @@ wet_rst_fdis_emntd_modfit$Climate_Bin<-"Extreme Wet"
 resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_12,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fdis_emntd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(wet_rst_fdis_emntd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fdis_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(wet_rst_fdis_emntd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_emntd_fdis_model_fits_NEW.csv",sep=",",row.names=F)
 
 
 #################
@@ -205,20 +205,20 @@ plot(x=fi,y=re,xlab="fitted values",ylab="residuals")
 
 
 Rst_Wet_ModList=list(
-  lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_12),
-  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12),
-  lme(lg2Rst12~Yn_eMPD+Yn_PCAcwm4trts+lg2SppN+Yn_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_12)
+  lme(Yn_eMPD~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2,correlation=x1,control=bb,data=rs_122),
+  lme(Yn_FDis4~lg2SppN,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122),
+  lme(lg2Rst12~Yn_eMPD+Yn_PCAcwm4trts+lg2SppN+Yn_FDis4,random=~1+lg2SppN|Site/PlotUnique2, correlation=x1,control=bb,data=rs_122)
   
 )
 
-sem.fit(Rst_Wet_ModList,rs_12,corr.errors=c("Yn_eMPD~~Yn_FDis4"),conditional=T,
+sem.fit(Rst_Wet_ModList,rs_122,corr.errors=c("Yn_eMPD~~Yn_FDis4"),conditional=T,
         model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
 #Naive Model
 
 
 # no further changes
-wet_rst_fdis_empd_pc<- sem.coefs(Rst_Wet_ModList,rs_12,standardize="scale")
+wet_rst_fdis_empd_pc<- sem.coefs(Rst_Wet_ModList,rs_122,standardize="scale")
 wet_rst_fdis_empd_pc$Climate_Bin<-"Extreme Wet"
 
 
@@ -233,8 +233,8 @@ sem.plot(Rst_Dry_ModList,rs_12,show.nonsig = FALSE,scaling=20)
 resids.df1<-partial.resid(lg2Rst12~Yn_PCAcwm4trts,Rst_Wet_ModList,data=rs_12,
                           model.control = list(lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")))
 
-write.table(wet_rst_fdis_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fdis_sem_coefs.csv",sep=",",row.names=F)
-write.table(wet_rst_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fdis_model_fits.csv",sep=",",row.names=F)
+write.table(wet_rst_fdis_empd_pc,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fdis_sem_coefs_NEW.csv",sep=",",row.names=F)
+write.table(wet_rst_fdis_empd_modfit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fdis_model_fits_NEW.csv",sep=",",row.names=F)
 
 #################
 ## Model 3     ##
