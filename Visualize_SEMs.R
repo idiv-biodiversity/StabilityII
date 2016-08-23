@@ -115,6 +115,3 @@ graph <-
 render_graph(graph)
 
 
-
-
-
