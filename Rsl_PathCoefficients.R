@@ -99,6 +99,7 @@ dev.off()
 # Model 2: FDis, eMPD #
 ########################
 
+rm(list=ls()) 
 
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_empd_fdis_sem_coefs_NEW.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rsl12")
@@ -209,6 +210,8 @@ dev.off()
 ## Model 3 #
 ############
 
+rm(list=ls()) 
+
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_epse_fdis_sem_coefs_NEW.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rsl12")
 dry1$PD_met<-"ePSE"
@@ -239,7 +242,7 @@ wet11<-rbind.data.frame(wet1,wet22)
 
 
 exwet<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_EXWET_epse_fdis_sem_coefs_V1_NEW.csv",sep=",",header=TRUE)
-eexwet1<-filter(exwet,response=="lg2Rsl12")
+exwet1<-filter(exwet,response=="lg2Rsl12")
 exwet1$PD_met<-"ePSE"
 exwet1$FD_met<-"FDisp"
 exwet1$X<-NULL
@@ -309,6 +312,7 @@ dev.off()
 # Model 4  ###
 ##############
 
+rm(list=ls()) 
 
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_epse_fric_sem_coefs.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rsl12")
@@ -407,6 +411,7 @@ dev.off()
 ### Model 5 #######
 ###################
 
+rm(list=ls()) 
 
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_emntd_fric_sem_coefs.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rsl12")
@@ -491,16 +496,16 @@ dev.off()
 # Model 6  #######
 ##################
 
-[Stop here]
+rm(list=ls()) 
 
-dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_DRY_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
-dry1<-filter(dry,response=="lg2Rst12")
+dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_DRY_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
+dry1<-filter(dry,response=="lg2Rsl12")
 dry1$PD_met<-"eMPD"
 dry1$FD_met<-"FRic"
 dry1$X<-NULL
 
-exdry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXDRY_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
-exdry1<-filter(exdry,response=="lg2Rst12")
+exdry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_EXDRY_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
+exdry1<-filter(exdry,response=="lg2Rsl12")
 exdry1$PD_met<-"eMPD"
 exdry1$FD_met<-"FRic"
 exdry1$X<-NULL
@@ -508,39 +513,40 @@ exdry1$X<-NULL
 
 
 #  use path coefficients from separate models for visualization purposes
-wet<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_WET_empd_fric_sem_coefs_V1.csv",sep=",",header=TRUE)
-wet1<-filter(wet,response=="lg2Rst12")
+wet<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_WET_empd_fric_sem_coefs_V1.csv",sep=",",header=TRUE)
+wet1<-filter(wet,response=="lg2Rsl12")
+
+wet2<-cbind.data.frame("lg2Rsl12","Ye_FRic4",0,0,1,"","Wet")
+colnames(wet2)[1]<-"response"
+colnames(wet2)[2]<-"predictor"
+colnames(wet2)[3]<-"estimate"
+colnames(wet2)[4]<-"std.error"
+colnames(wet2)[5]<-"p.value"
+colnames(wet2)[6]<-"X"
+colnames(wet2)[7]<-"Climate_Bin"
+
+wet1<-rbind.data.frame(wet1,wet2)
 wet1$PD_met<-"eMPD"
 wet1$FD_met<-"FRic"
 wet1$X<-NULL
 
 
-wet2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_WET_empd_fric_sem_coefs_V2.csv",sep=",",header=TRUE)
-wet22<-filter(wet2,response=="lg2Rst12")
-wet22$PD_met<-"eMPD"
-wet22$FD_met<-"FRic"
-wet22$X<-NULL
-
-wet22<-wet22[3,]
-
-wet11<-rbind.data.frame(wet1,wet22)
-
-exwet<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
-exwet1<-filter(exwet,response=="lg2Rst12")
+exwet<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rsl_EXWET_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
+exwet1<-filter(exwet,response=="lg2Rsl12")
 exwet1$PD_met<-"eMPD"
 exwet1$FD_met<-"FRic"
 exwet1$X<-NULL
 
-paths6<-rbind.data.frame(dry1,exdry1, wet11,exwet1)
+paths6<-rbind.data.frame(dry1,exdry1, wet1,exwet1)
 
 paths6$lowCI<-paths6$estimate-(paths6$std.error*1.96)
 paths6$highCI<-paths6$estimate+(paths6$std.error*1.96)
 
 paths6$predictor<-as.character(paths6$predictor)
 paths6$predictor<-ifelse(paths6$predictor=="lg2SppN","Species Richness",paths6$predictor)
-paths6$predictor<-ifelse(paths6$predictor=="Yn_PCAcwm4trts","Fast-Slow (CWM)",paths6$predictor)
-paths6$predictor<-ifelse(paths6$predictor=="Yn_eMPD","Phylogenetic Diversity",paths6$predictor)
-paths6$predictor<-ifelse(paths6$predictor=="Yn_FRic4","Functional Diversity",paths6$predictor)
+paths6$predictor<-ifelse(paths6$predictor=="Ye_PCAcwm4trts","Fast-Slow (CWM)",paths6$predictor)
+paths6$predictor<-ifelse(paths6$predictor=="Ye_eMPD","Phylogenetic Diversity",paths6$predictor)
+paths6$predictor<-ifelse(paths6$predictor=="Ye_FRic4","Functional Diversity",paths6$predictor)
 #paths5$predictor<-ifelse(paths5$predictor=="Yn_FDis4","Functional Diversity",paths5$predictor)
 
 paths6$predictor<-as.factor(paths6$predictor)
@@ -550,15 +556,15 @@ paths6$PathSig<-as.factor(paths6$PathSig)
 
 ##Figure
 
-p6<-ggplot(data=paths5,aes(x=Climate_Bin,y=estimate,group=predictor,colour=PathSig))+
+p6<-ggplot(data=paths6,aes(x=Climate_Bin,y=estimate,group=predictor,colour=PathSig))+
   geom_hline(yintercept=0,linetype=3,color="gray40")+
   geom_point(size=2,shape=19)+
   geom_errorbar(width=0.2,aes(ymin=lowCI,ymax=highCI))+
-  scale_y_continuous(limits=c(-0.45,.5),breaks=c(-0.4,-.3,-.2,0,-.1,0,.1,.2,.3,0.4))+
+  scale_y_continuous(limits=c(-0.45,.68),breaks=c(-0.4,-.3,-.2,0,-.1,0,.1,.2,.3,0.4,0.5,0.6))+
   
   scale_colour_manual(name="",values = c("1"= "#de2d26","0" ="#3182bd"))+
   
-  labs(x = "", y = "Standardized path coefficient (95 % CI)") + ggtitle("Resistance (SPEI12)")+
+  labs(x = "", y = "Standardized path coefficient (95 % CI)") + ggtitle("Resilience (SPEI12)")+
   
   facet_wrap(~predictor,ncol=2,nrow=2)+
   panel_border(colour = "black", size = 0.5, linetype = 1,
@@ -571,7 +577,7 @@ p6<-ggplot(data=paths5,aes(x=Climate_Bin,y=estimate,group=predictor,colour=PathS
         legend.position="none",
         panel.background =element_rect(fill="transparent",colour="black"),panel.grid.minor=element_blank())
 
-png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/PathCoefficients_Rst_FRicEMPD.png", 
+png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/PathCoefficients_Rsl_FRicEMPD.png", 
     type="cairo",
     units="in", 
     width=5 ,

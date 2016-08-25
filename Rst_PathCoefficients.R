@@ -102,6 +102,7 @@ dev.off()
 # Model 2: FDis, eMPD #
 ########################
 
+rm(list=ls()) 
 
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_DRY_empd_fdis_sem_coefs_NEW.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rst12")
@@ -184,6 +185,8 @@ dev.off()
 ## Model 3 #
 ############
 
+rm(list=ls()) 
+
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_DRY_epse_fdis_sem_coefs_NEW.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rst12")
 dry1$PD_met<-"ePSE"
@@ -262,6 +265,7 @@ dev.off()
 # Model 4  ###
 ##############
 
+rm(list=ls()) 
 
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_DRY_epse_fric_sem_coefs.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rst12")
@@ -358,6 +362,7 @@ dev.off()
 ### Model 5 #######
 ###################
 
+rm(list=ls()) 
 
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_DRY_emntd_fric_sem_coefs.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rst12")
@@ -452,6 +457,8 @@ dev.off()
 # Model 6  #######
 ##################
 
+rm(list=ls()) 
+
 dry<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_DRY_empd_fric_sem_coefs.csv",sep=",",header=TRUE)
 dry1<-filter(dry,response=="lg2Rst12")
 dry1$PD_met<-"eMPD"
@@ -463,7 +470,6 @@ exdry1<-filter(exdry,response=="lg2Rst12")
 exdry1$PD_met<-"eMPD"
 exdry1$FD_met<-"FRic"
 exdry1$X<-NULL
-
 
 
 #  use path coefficients from separate models for visualization purposes
@@ -509,7 +515,7 @@ paths6$PathSig<-as.factor(paths6$PathSig)
 
 ##Figure
 
-p6<-ggplot(data=paths5,aes(x=Climate_Bin,y=estimate,group=predictor,colour=PathSig))+
+p6<-ggplot(data=paths6,aes(x=Climate_Bin,y=estimate,group=predictor,colour=PathSig))+
   geom_hline(yintercept=0,linetype=3,color="gray40")+
   geom_point(size=2,shape=19)+
   geom_errorbar(width=0.2,aes(ymin=lowCI,ymax=highCI))+
