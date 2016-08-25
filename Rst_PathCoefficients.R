@@ -296,7 +296,7 @@ wet22<-wet22[3,]
 wet11<-rbind.data.frame(wet1,wet22)
 
 exwet<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Rst_EXWET_epse_fric_sem_coefs.csv",sep=",",header=TRUE)
-eexwet1<-filter(exwet,response=="lg2Rst12")
+exwet1<-filter(exwet,response=="lg2Rst12")
 exwet1$PD_met<-"ePSE"
 exwet1$FD_met<-"FRic"
 exwet1$X<-NULL
@@ -324,7 +324,7 @@ p4<-ggplot(data=paths4,aes(x=Climate_Bin,y=estimate,group=predictor,colour=PathS
   geom_hline(yintercept=0,linetype=3,color="gray40")+
   geom_point(size=2,shape=19)+
   geom_errorbar(width=0.2,aes(ymin=lowCI,ymax=highCI))+
-  scale_y_continuous(limits=c(-0.45,.5),breaks=c(-0.4,-.3,-.2,0,-.1,0,.1,.2,.3,0.4))+
+  scale_y_continuous(limits=c(-0.45,0.5),breaks=c(-0.4,-.3,-.2,0,-.1,0,.1,.2,.3,0.4))+
   
   scale_colour_manual(name="",values = c("1"= "#de2d26","0" ="#3182bd"))+
   
