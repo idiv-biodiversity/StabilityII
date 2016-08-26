@@ -31,6 +31,8 @@ stab_4$lg2Biomass <- log(stab_4$Plot_Biomassxbar,2)
 
 stab_4$lg2SDBiomass <- log(stab_4$Plot_Biomasssd,2)
 
+stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
+stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
 
 #################
@@ -43,51 +45,51 @@ cc<-lmeControl(opt="optim")
 
 #Model 1: Biomass and SppN
 
-a<-lme(lg2Biomass~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_4)
-a1<-lme(lg2Biomass~lg2SppN,random=~1|Site,control=cc,data=stab_4)
+a<-lme(lg2Biomass~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+a1<-lme(lg2Biomass~lg2SppN,random=~1|Site,control=cc,data=stab_444)
 AIC(a,a1)
 
 
 re<-resid(a, type="normalized")
 fi<-fitted(a)  
 plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_4$lg2SppN,y=re,xlab="SppN",ylab="residuals")
+plot(x=stab_444$lg2SppN,y=re,xlab="SppN",ylab="residuals")
 
-qqnorm(stab_4$lg2Biomass)
-qqline(stab_4$lg2Biomass)   ## use the log data
+qqnorm(stab_444$lg2Biomass)
+qqline(stab_444$lg2Biomass)   ## use the log data
 
-# Plot Biomass increases with SppN (coefficient = 0.478665)
+# Plot Biomass increases with SppN (coefficient = 0.594344)
 
 
 #Model 2: SD of biomass and SppN
 
 
-b<-lme(lg2SDBiomass~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_4)
-b1<-lme(lg2SDBiomass~lg2SppN,random=~1|Site,control=cc,data=stab_4)
+b<-lme(lg2SDBiomass~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+b1<-lme(lg2SDBiomass~lg2SppN,random=~1|Site,control=cc,data=stab_444)
 AIC(b,b1)
 
 
 re<-resid(b, type="normalized")
 fi<-fitted(b)  
 plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_4$lg2SppN,y=re,xlab="SppN",ylab="residuals")
+plot(x=stab_444$lg2SppN,y=re,xlab="SppN",ylab="residuals")
 
-qqnorm(stab_4$lg2SDBiomass)
-qqline(stab_4$lg2SDBiomass)   ## use the log data
+qqnorm(stab_444$lg2SDBiomass)
+qqline(stab_444$lg2SDBiomass)   ## use the log data
 
-# SD of plot biomass also increased with SppN (coefficient = 0.316512)
+# SD of plot biomass also increased with SppN (coefficient = 0.311863)
 
 
 # Model 3:  increase of biomass with fast-slow
 
-a<-lme(lg2Biomass~PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_4)
-a1<-lme(lg2Biomass~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_4)
+a<-lme(lg2Biomass~PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+a1<-lme(lg2Biomass~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
 AIC(a,a1)
 
 re<-resid(a, type="normalized")
 fi<-fitted(a)  
 plot(x=fi,y=re,xlab="fitted values",ylab="residuals") 
-plot(x=stab_4$PCAdim1_4trts,y=re,xlab="SppN",ylab="residuals")
+plot(x=stab_444$PCAdim1_4trts,y=re,xlab="SppN",ylab="residuals")
 
 
 # Plot Biomass increases with f-s axis (coefficient = 0.184024)

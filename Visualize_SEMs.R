@@ -236,7 +236,7 @@ colnames(wet2)[5]<-"p.value"
 colnames(wet2)[6]<-"X"
 colnames(wet2)[7]<-"Climate_Bin"
 
-mod3<-rbind.data.frame(wet,wet2)
+mod3<-rbind.data.frame(wet)
 
 paths <- mod3 %>%
   select(response,predictor, estimate,p.value)
