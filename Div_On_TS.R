@@ -25,8 +25,6 @@ stab_4$lg2SppN <- log(stab_4$SppN,2)
 stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
-
-
 ##################################
 # Gross Figures 1 & 2 ############
 ##################################
@@ -47,29 +45,35 @@ stab_g<-filter(stab_g,keep==1)
 # Step 1: lm regression / loop through all#
 ###########################################
 
-library(QuantPsyc)
 
 n<-length(unique(stab_g$Site))
 
 outt=c();
+
 for(i in 1:n){
   
   test=subset(stab_g, stab_g$Site==(unique(stab_g$Site))[i])  
   Site<-as.character(unique(test$Site))
-  Study_length<-unique(test$Study_length)
+  Study_length<-max(test$Study_length)
 
 biom_lm<-lm(log(Plot_Biomassxbar)~log(SppN),data=test)
 
-lm.beta(lm1)
+beta_b<-lm.beta(biom_lm)
 
-lm.D9.beta <- lm.beta(lm.D9)
-coef(lm.D9.beta)
+biom_beta<-coef(beta_b)[2]
+
+biom_slope<-summary(biom_lm)$coefficient[2,1]
 
 sd_lm<-lm(log(Plot_Biomasssd)~log(SppN),data=test)
 
-sd_beta<-summary(sd_lm)$coefficient[2,1]
+beta_sd<-lm.beta(sd_lm)
 
-study<-cbind.data.frame(Site,Study_length,biom_beta,sd_beta)
+sd_beta<-coef(beta_sd)[2]
+
+sd_slope<-summary(sd_lm)$coefficient[2,1]
+
+
+study<-cbind.data.frame(Site,Study_length,biom_beta,sd_beta,biom_slope,sd_slope)
 
 outt[[i]]<-rbind.data.frame(study)
 
@@ -77,3 +81,12 @@ outt[[i]]<-rbind.data.frame(study)
 
 jjj<-do.call(rbind,outt)  
 jjj<-data.frame(jjj)
+
+div_ts<-write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_ts.csv",sep=",",row.names=F)
+
+
+######################################
+## Meta-analysis #####################
+######################################
+
+require(metaphor)
