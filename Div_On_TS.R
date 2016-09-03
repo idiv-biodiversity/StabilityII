@@ -25,12 +25,8 @@ stab_4$lg2SppN <- log(stab_4$SppN,2)
 stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
-##################################
-# Gross Figures 1 & 2 ############
-##################################
 
-#find studies without monocultures
-
+#Drop studies without monocultures
 
 study_div<-summarize(group_by(stab_444,Site),min_spp=min(SppN),max_spp=max(SppN))
 
@@ -64,6 +60,8 @@ biom_beta<-coef(beta_b)[2]
 
 biom_slope<-summary(biom_lm)$coefficient[2,1]
 
+biom_var<-vcov(biom_lm)[2,2]
+
 sd_lm<-lm(log(Plot_Biomasssd)~log(SppN),data=test)
 
 beta_sd<-lm.beta(sd_lm)
@@ -71,9 +69,10 @@ beta_sd<-lm.beta(sd_lm)
 sd_beta<-coef(beta_sd)[2]
 
 sd_slope<-summary(sd_lm)$coefficient[2,1]
+sd_var<-vcov(sd_lm)[2,2]
 
 
-study<-cbind.data.frame(Site,Study_length,biom_beta,sd_beta,biom_slope,sd_slope)
+study<-cbind.data.frame(Site,Study_length,biom_beta,sd_beta,biom_slope,biom_var,sd_slope,sd_var)
 
 outt[[i]]<-rbind.data.frame(study)
 
@@ -82,7 +81,7 @@ outt[[i]]<-rbind.data.frame(study)
 jjj<-do.call(rbind,outt)  
 jjj<-data.frame(jjj)
 
-div_ts<-write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_ts.csv",sep=",",row.names=F)
+write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_ts.csv",sep=",",row.names=F)
 
 
 ######################################
@@ -90,3 +89,12 @@ div_ts<-write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Comm
 ######################################
 
 require(metaphor)
+
+div_ts<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_ts.csv",sep=",",header=T)
+
+
+biom_re<-rma.uni(yi=biom_slope,vi=biom_var,method="REML",knha=TRUE,data=div_ts)
+
+sd_re<-rma.uni(yi=sd_slope,vi=sd_var,method="REML",knha=TRUE,data=div_ts)
+
+
