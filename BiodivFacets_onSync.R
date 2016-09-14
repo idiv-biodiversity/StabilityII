@@ -3,7 +3,7 @@ rm(list=ls())
 library(lmerTest)
 library(nlme)
 library(dplyr)
-
+library(AICcmodavg)
 # Data
 stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
 

@@ -2,11 +2,11 @@ rm(list=ls())
 #require(devtools)
 #install_github("jslefche/piecewiseSEM")
 
+require(dplyr)
 require(piecewiseSEM)
 library(semPlot)
 library(lmerTest)
 library(nlme)
-library(dplyr)
 
 # Data
 stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
@@ -58,6 +58,8 @@ qqnorm(b1)
 
 c<-lme(Plot_Asynchrony~lg2SppN,random=~1|Site,control=cc,data=stab_444)
 c1<-lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+
+
 AIC(c,c1)
 
 plot(c1)
@@ -91,6 +93,25 @@ AIC(e,e1,e2)
 
 plot(e2)
 qqnorm(e2)
+
+g<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
+g1<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+g2<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+eMNTD|Site,control=cc,data=stab_444)
+g3<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+FDis4|Site,control=cc,data=stab_444)
+g4<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN+PCAdim1_4trts|Site,control=cc,data=stab_444)
+g5<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN+eMNTD|Site,control=cc,data=stab_444)
+g6<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN+FDis4|Site,control=cc,data=stab_444)
+g7<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+FDis4|Site,control=cc,data=stab_444)
+g8<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+eMNTD|Site,control=cc,data=stab_444)
+g9<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+FDis4|Site,control=cc,data=stab_444)
+g10<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+FDis4|Site,control=cc,data=stab_444)
+
+
+AICc(g,g1,g2,g3,g4)
+
+plot(e2)
+qqnorm(e2)
+
 
 
 f<-lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
@@ -357,7 +378,7 @@ render_graph(my_graph)
 modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN+FDis4+PCAdim1_4trts+eMNTD|Site,control=bb,data=stab_444),
   lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+lg2SppN+eMNTD,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
