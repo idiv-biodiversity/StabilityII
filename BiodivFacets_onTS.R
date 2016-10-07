@@ -89,8 +89,6 @@ newdat$pred_uCIt<-2^(newdat$p_uCI)
 newdat$pred_lCIt<-2^(newdat$p_lCI)
 
 
-
-
 c<-ggplot(data=spp_ts,aes(x=SppN,y=pred_t))+
 
     geom_smooth(data=spp_ts,aes(y=pred_t,x=SppN,group=Site),method="lm",formula=y~x,size=0.5,color="gray50",se=FALSE)+
@@ -178,17 +176,15 @@ newdat$pred_uCIt<-2^(newdat$p_uCI)
 newdat$pred_lCIt<-2^(newdat$p_lCI)
 
 
-
-
 d<-ggplot(data=emntd_ts,aes(x=eMNTD,y=pred_t))+
   
-  geom_smooth(data=emntd_ts,aes(y=pred_t,x=eMNTD,group=Site),method="lm",formula=y~x,size=0.5,color="gray50",se=FALSE)+
+  geom_smooth(data=emntd_ts,aes(y=pred_t,x=eMNTD,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
   geom_smooth(data=newdat,aes(y=pred_t,x=eMNTD),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
   geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
   labs(x="Phylogenetic diversity (eMNTD)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
-  scale_x_continuous() + scale_y_continuous(trans="log2",breaks=c(0.5,1,2,4,8,16))
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(1,16),breaks=c(1,2,4,8,16))
 
 emNTD<-d+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
                axis.title.y=element_text(colour="black",face="bold",size=8,vjust=1),
@@ -197,22 +193,28 @@ emNTD<-d+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
                plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
                panel.background = element_rect(fill = "white"))
 
-[[STOP HERE]]
+
 
 #eMPD
 
-b<-lme(TS_lg2~eMPD,random=~1+eMPD|Site,control=cc,data=stab_444)
-b1<-lme(TS_lg2~eMPD,random=~1+eMPD|Site/SppN,control=cc,data=stab_444)
-b2<-lme(TS_lg2~eMPD,random=~1|Site,control=cc,data=stab_444)
-b3<-lme(TS_lg2~eMPD,random=~1|Site/SppN,control=cc,data=stab_444)
-b4<-lme(TS_lg2~eMPD,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-b5<-lme(TS_lg2~eMPD,random=~1+lg2SppN*eMPD|Site,control=cc,data=stab_444)
-b6<-lme(TS_lg2~eMPD,random=list(~1+lg2SppN+eMPD|Site),control=cc,data=stab_444)
 
-AICc(b,b1,b2,b3,b4,b5,b6)
+Cand.set <- list( )
+Cand.set[[1]]<-lme(TS_lg2~eMPD,random=~1+eMPD|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~eMPD,random=~1+eMPD|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~eMPD,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[4]]<-lme(TS_lg2~eMPD,random=~1|Site/SppN,control=cc,data=stab_444)
+Cand.set[[5]]<-lme(TS_lg2~eMPD,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+Cand.set[[6]]<-lme(TS_lg2~eMPD,random=~1+lg2SppN*eMPD|Site,control=cc,data=stab_444)
+Cand.set[[7]]<-lme(TS_lg2~eMPD,random=list(~1+lg2SppN+eMPD|Site),control=cc,data=stab_444)
 
-plot(b6)
-qqnorm(b6)
+
+Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
+res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
+res.table
+
+
+plot(Cand.set[[7]])
+qqnorm(Cand.set[[7]])
 
 ### LRT
 
@@ -233,32 +235,79 @@ r.squaredGLMM(final)
 # predictions  #
 ################
 
+empd_ts<-select(stab_444,Site,UniqueID,lg2SppN,TS_lg2,eMPD)
+
+empd_ts$pred<-predict(final,empd_ts,re.form=~(~1+lg2SppN*eMPD|Site))
+
+empd_ts$TS<-2^(empd_ts$TS_lg2)
+empd_ts$pred_t<-2^(empd_ts$pred)
+
+newdat <- expand.grid(eMPD=seq(from=0,to=13.2,by=0.1))
+newdat$pred <- predict(final, newdat, level = 0)
+
+Designmat <- model.matrix(formula(final)[-2], newdat)
+predvar <- diag(Designmat %*% vcov(final) %*% t(Designmat)) 
+newdat$SE <- sqrt(predvar) 
+
+
+newdat$p_lCI<-newdat$pred-(newdat$SE*1.96)
+newdat$p_uCI<-newdat$pred+(newdat$SE*1.96)
+
+newdat$pred_t<-2^(newdat$pred)
+newdat$pred_uCIt<-2^(newdat$p_uCI)
+newdat$pred_lCIt<-2^(newdat$p_lCI)
+
+
+e<-ggplot(data=empd_ts,aes(x=eMPD,y=pred_t))+
+  
+  geom_smooth(data=empd_ts,aes(y=pred_t,x=eMPD,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=eMPD),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  
+  
+  labs(x="Phylogenetic diversity (eMPD)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
+
+eMPD<-e+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
+                axis.title.y=element_text(colour="black",face="bold",size=8,vjust=1),
+                axis.text.y=element_text(colour="black",face="bold",size=8),
+                axis.text.x=element_text(colour="black",face="bold",size=8),
+                plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
+                panel.background = element_rect(fill = "white"))
+
+
+
+
 #ePSE
 
-b<-lme(TS_lg2~ePSE,random=~1+ePSE|Site,control=cc,data=stab_444)
-b1<-lme(TS_lg2~ePSE,random=~1+ePSE|Site/SppN,control=cc,data=stab_444)
-b2<-lme(TS_lg2~ePSE,random=~1|Site,control=cc,data=stab_444)
-b3<-lme(TS_lg2~ePSE,random=~1|Site/SppN,control=cc,data=stab_444)
-b4<-lme(TS_lg2~ePSE,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-b5<-lme(TS_lg2~ePSE,random=~1+lg2SppN*ePSE|Site,control=cc,data=stab_444)
-b6<-lme(TS_lg2~ePSE,random=list(~1+lg2SppN+ePSE|Site),control=cc,data=stab_444)
+Cand.set <- list( )
+Cand.set[[1]]<-lme(TS_lg2~ePSE,random=~1+ePSE|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~ePSE,random=~1+ePSE|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~ePSE,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[4]]<-lme(TS_lg2~ePSE,random=~1|Site/SppN,control=cc,data=stab_444)
+Cand.set[[5]]<-lme(TS_lg2~ePSE,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+Cand.set[[6]]<-lme(TS_lg2~ePSE,random=~1+lg2SppN*ePSE|Site,control=cc,data=stab_444)
+Cand.set[[7]]<-lme(TS_lg2~ePSE,random=list(~1+lg2SppN+ePSE|Site),control=cc,data=stab_444)
 
-AICc(b,b1,b2,b3,b4,b5,b6)
 
-plot(b6)
-qqnorm(b6)
+Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
+res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
+res.table
+
+plot(Cand.set[[6]])
+qqnorm(Cand.set[[6]])
 
 ### LRT
 
-big<-lme(TS_lg2~ePSE,random=list(~1+lg2SppN+ePSE|Site),control=cc,data=stab_444,method="ML")
-small<-lme(TS_lg2~1,random=list(~1+lg2SppN+ePSE|Site),control=cc,data=stab_444,method="ML")
+big<-lme(TS_lg2~ePSE,random=list(~1+lg2SppN*ePSE|Site),control=cc,data=stab_444,method="ML")
+small<-lme(TS_lg2~1,random=list(~1+lg2SppN*ePSE|Site),control=cc,data=stab_444,method="ML")
 
 anova(big,small)
 
 
 #final 
 
-final<-lme(TS_lg2~ePSE,random=list(~1+lg2SppN+ePSE|Site),control=cc,data=stab_444)
+final<-lme(TS_lg2~ePSE,random=list(~1+lg2SppN*ePSE|Site),control=cc,data=stab_444)
 
 r.squaredGLMM(final)
 
@@ -268,20 +317,68 @@ r.squaredGLMM(final)
 # predictions  #
 ################
 
+
+epse_ts<-select(stab_444,Site,UniqueID,lg2SppN,TS_lg2,ePSE)
+
+epse_ts$pred<-predict(final,epse_ts,re.form=~(~1+lg2SppN*ePSE|Site))
+
+epse_ts$TS<-2^(epse_ts$TS_lg2)
+epse_ts$pred_t<-2^(epse_ts$pred)
+
+newdat <- expand.grid(ePSE=seq(from=0,to=1,by=0.01))
+newdat$pred <- predict(final, newdat, level = 0)
+
+Designmat <- model.matrix(formula(final)[-2], newdat)
+predvar <- diag(Designmat %*% vcov(final) %*% t(Designmat)) 
+newdat$SE <- sqrt(predvar) 
+
+
+newdat$p_lCI<-newdat$pred-(newdat$SE*1.96)
+newdat$p_uCI<-newdat$pred+(newdat$SE*1.96)
+
+newdat$pred_t<-2^(newdat$pred)
+newdat$pred_uCIt<-2^(newdat$p_uCI)
+newdat$pred_lCIt<-2^(newdat$p_lCI)
+
+
+f<-ggplot(data=epse_ts,aes(x=ePSE,y=pred_t))+
+  
+  geom_smooth(data=epse_ts,aes(y=pred_t,x=ePSE,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=ePSE),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  
+  
+  labs(x="Phylogenetic diversity (ePSE)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
+
+ePSE<-f+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
+               axis.title.y=element_text(colour="black",face="bold",size=8,vjust=1),
+               axis.text.y=element_text(colour="black",face="bold",size=8),
+               axis.text.x=element_text(colour="black",face="bold",size=8),
+               plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
+               panel.background = element_rect(fill = "white"))
+
+
+
+[[STOP HERE]]
 #FDis
 
-b<-lme(TS_lg2~FDis4,random=~1+FDis4|Site,control=cc,data=stab_444)
-b1<-lme(TS_lg2~FDis4,random=~1+FDis4|Site/SppN,control=cc,data=stab_444)
-b2<-lme(TS_lg2~FDis4,random=~1|Site,control=cc,data=stab_444)
-b3<-lme(TS_lg2~FDis4,random=~1|Site/SppN,control=cc,data=stab_444)
-b4<-lme(TS_lg2~FDis4,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-b5<-lme(TS_lg2~FDis4,random=~1+lg2SppN*FDis4|Site,control=cc,data=stab_444)
-b6<-lme(TS_lg2~FDis4,random=list(~1+lg2SppN+FDis4|Site),control=cc,data=stab_444)
+Cand.set <- list( )
+Cand.set[[1]]<-lme(TS_lg2~FDis4,random=~1+FDis4|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~FDis4,random=~1+FDis4|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~FDis4,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[4]]<-lme(TS_lg2~FDis4,random=~1|Site/SppN,control=cc,data=stab_444)
+Cand.set[[5]]<-lme(TS_lg2~FDis4,random=~1+FDis4|Site,control=cc,data=stab_444)
+Cand.set[[6]]<-lme(TS_lg2~FDis4,random=~1+lg2SppN*FDis4|Site,control=cc,data=stab_444)
+Cand.set[[7]]<-lme(TS_lg2~FDis4,random=list(~1+lg2SppN+FDis4|Site),control=cc,data=stab_444)
 
-AICc(b,b1,b2,b3,b4,b5,b6)
 
-plot(b5)
-qqnorm(b5)
+Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
+res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
+res.table
+
+plot(Cand.set[[7]])
+qqnorm(Cand.set[[7]])
 
 ### LRT
 
@@ -297,10 +394,49 @@ final<-lme(TS_lg2~FDis4,random=list(~1+lg2SppN+FDis4|Site),control=cc,data=stab_
 
 r.squaredGLMM(final)
 
-
 ################
 # predictions  #
 ################
+
+fdis_ts<-select(stab_444,Site,UniqueID,lg2SppN,TS_lg2,FDis4)
+
+fdis_ts$pred<-predict(final,fdis_ts,re.form=~(~1+lg2SppN+FDis4|Site))
+
+fdis_ts$TS<-2^(fdis_ts$TS_lg2)
+fdis_ts$pred_t<-2^(fdis_ts$pred)
+
+newdat <- expand.grid(FDis4=seq(from=0,to=2.1,by=0.1))
+newdat$pred <- predict(final, newdat, level = 0)
+
+Designmat <- model.matrix(formula(final)[-2], newdat)
+predvar <- diag(Designmat %*% vcov(final) %*% t(Designmat)) 
+newdat$SE <- sqrt(predvar) 
+
+
+newdat$p_lCI<-newdat$pred-(newdat$SE*1.96)
+newdat$p_uCI<-newdat$pred+(newdat$SE*1.96)
+
+newdat$pred_t<-2^(newdat$pred)
+newdat$pred_uCIt<-2^(newdat$p_uCI)
+newdat$pred_lCIt<-2^(newdat$p_lCI)
+
+
+e<-ggplot(data=fdis_ts,aes(x=FDis4,y=pred_t))+
+  
+  geom_smooth(data=fdis_ts,aes(y=pred_t,x=FDis4,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=FDis4),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  
+  
+  labs(x="Functional diversity (FDis)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(1,16),breaks=c(1,2,4,8,16))
+
+FDis<-e+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
+                axis.title.y=element_text(colour="black",face="bold",size=8,vjust=1),
+                axis.text.y=element_text(colour="black",face="bold",size=8),
+                axis.text.x=element_text(colour="black",face="bold",size=8),
+                plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
+                panel.background = element_rect(fill = "white"))
 
 
 #FRic
@@ -337,19 +473,25 @@ r.squaredGLMM(final)
 # predictions  #
 ################
 
+
 #PCAdim1_4trts
-b<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site,control=cc,data=stab_444)
-b1<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site/lg2SppN,control=cc,data=stab_444)
-b2<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
-b3<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site/SppN,control=cc,data=stab_444)
-b4<-lme(TS_lg2~PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-b5<-lme(TS_lg2~PCAdim1_4trts,random=~1+lg2SppN*PCAdim1_4trts|Site,control=cc,data=stab_444)
-b6<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444)
 
-AICc(b,b1,b2,b3,b4,b5,b6)
+Cand.set <- list( )
+Cand.set[[1]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[4]]<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site/SppN,control=cc,data=stab_444)
+Cand.set[[5]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+Cand.set[[6]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+lg2SppN*PCAdim1_4trts|Site,control=cc,data=stab_444)
+Cand.set[[7]]<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444)
 
-plot(b6)
-qqnorm(b6)
+
+Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
+res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
+res.table
+
+plot(Cand.set[[7]])
+qqnorm(Cand.set[[7]])
 
 
 ### LRT
@@ -362,7 +504,7 @@ anova(big,small)
 
 #final 
 
-final<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN*PCAdim1_4trts|Site),control=cc,data=stab_444,method="REML")
+final<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="REML")
 
 r.squaredGLMM(final)
 
@@ -370,6 +512,59 @@ r.squaredGLMM(final)
 # predictions  #
 ################
 
+
+fs_ts<-select(stab_444,Site,UniqueID,lg2SppN,TS_lg2,PCAdim1_4trts)
+
+fs_ts$pred<-predict(final,fs_ts,re.form=~(~1+lg2SppN+PCAdim1_4trts|Site))
+
+fs_ts$TS<-2^(fs_ts$TS_lg2)
+fs_ts$pred_t<-2^(fs_ts$pred)
+
+newdat <- expand.grid(PCAdim1_4trts=seq(from=-3.62,to=4.47,by=0.1))
+newdat$pred <- predict(final, newdat, level = 0)
+
+Designmat <- model.matrix(formula(final)[-2], newdat)
+predvar <- diag(Designmat %*% vcov(final) %*% t(Designmat)) 
+newdat$SE <- sqrt(predvar) 
+
+
+newdat$p_lCI<-newdat$pred-(newdat$SE*1.96)
+newdat$p_uCI<-newdat$pred+(newdat$SE*1.96)
+
+newdat$pred_t<-2^(newdat$pred)
+newdat$pred_uCIt<-2^(newdat$p_uCI)
+newdat$pred_lCIt<-2^(newdat$p_lCI)
+
+
+f<-ggplot(data=fs_ts,aes(x=PCAdim1_4trts,y=pred_t))+
+  
+  geom_smooth(data=fs_ts,aes(y=pred_t,x=PCAdim1_4trts,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=PCAdim1_4trts),method="lm",formula=y~x,size=1,color="gray35",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  
+  
+  labs(x="Fast-slow spectrum ",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(1,16),breaks=c(1,2,4,8,16))
+
+FStrt<-f+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
+               axis.title.y=element_blank(),
+               axis.text.y=element_text(colour="black",face="bold",size=8),
+               axis.text.x=element_text(colour="black",face="bold",size=8),
+               plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
+               panel.background = element_rect(fill = "white"))
+
+
+#
+png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Biodiv_TS.png", 
+    units="in", 
+    width=9, 
+    height=4, 
+    pointsize=2, 
+    res=200)
+
+plot_grid(emNTD,FDis,FStrt, ncol=3)
+
+dev.off()
 
 #Plot_Asynchrony
 
