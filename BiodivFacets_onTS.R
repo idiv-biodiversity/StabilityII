@@ -28,12 +28,12 @@ stab_4$lg2SppN <- log(stab_4$SppN,2)
 stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
+cc<-lmeControl(opt="optim")
 
 ###########################################
 # Effects on TS of biodiversity facets   ##
 ###########################################
 
-cc<-lmeControl(opt="optim")
 
 ###########
 ## SR  ####
@@ -360,7 +360,7 @@ ePSE<-f+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
 
 
 
-[[STOP HERE]]
+
 #FDis
 
 Cand.set <- list( )
@@ -398,6 +398,7 @@ r.squaredGLMM(final)
 # predictions  #
 ################
 
+
 fdis_ts<-select(stab_444,Site,UniqueID,lg2SppN,TS_lg2,FDis4)
 
 fdis_ts$pred<-predict(final,fdis_ts,re.form=~(~1+lg2SppN+FDis4|Site))
@@ -421,7 +422,7 @@ newdat$pred_uCIt<-2^(newdat$p_uCI)
 newdat$pred_lCIt<-2^(newdat$p_lCI)
 
 
-e<-ggplot(data=fdis_ts,aes(x=FDis4,y=pred_t))+
+g<-ggplot(data=fdis_ts,aes(x=FDis4,y=pred_t))+
   
   geom_smooth(data=fdis_ts,aes(y=pred_t,x=FDis4,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
   geom_smooth(data=newdat,aes(y=pred_t,x=FDis4),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
@@ -429,7 +430,7 @@ e<-ggplot(data=fdis_ts,aes(x=FDis4,y=pred_t))+
   
   
   labs(x="Functional diversity (FDis)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
-  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(1,16),breaks=c(1,2,4,8,16))
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 FDis<-e+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
                 axis.title.y=element_text(colour="black",face="bold",size=8,vjust=1),
@@ -441,18 +442,23 @@ FDis<-e+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
 
 #FRic
 
-b<-lme(TS_lg2~FRic4,random=~1+FRic4|Site,control=cc,data=stab_444)
-b1<-lme(TS_lg2~FRic4,random=~1+FRic4|Site/SppN,control=cc,data=stab_444)
-b2<-lme(TS_lg2~FRic4,random=~1|Site,control=cc,data=stab_444)
-b3<-lme(TS_lg2~FRic4,random=~1|Site/SppN,control=cc,data=stab_444)
-b4<-lme(TS_lg2~FRic4,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-b5<-lme(TS_lg2~FRic4,random=~1+lg2SppN*FRic4|Site,control=cc,data=stab_444)
-b6<-lme(TS_lg2~FRic4,random=list(~1+lg2SppN+FRic4|Site),control=cc,data=stab_444)
+Cand.set <- list( )
+Cand.set[[1]]<-lme(TS_lg2~FRic4,random=~1+FRic4|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~FRic4,random=~1+FRic4|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~FRic4,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[4]]<-lme(TS_lg2~FRic4,random=~1|Site/SppN,control=cc,data=stab_444)
+Cand.set[[5]]<-lme(TS_lg2~FRic4,random=~1+FRic4|Site,control=cc,data=stab_444)
+Cand.set[[6]]<-lme(TS_lg2~FRic4,random=~1+lg2SppN*FRic4|Site,control=cc,data=stab_444)
+Cand.set[[7]]<-lme(TS_lg2~FRic4,random=list(~1+lg2SppN+FRic4|Site),control=cc,data=stab_444)
 
-AICc(b,b1,b2,b3,b4,b5,b6)
 
-plot(b4)
-qqnorm(b4)
+Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
+res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
+res.table
+
+plot(Cand.set[[6]])
+qqnorm(Cand.set[[6]])
+
 
 ### LRT
 
@@ -472,6 +478,47 @@ r.squaredGLMM(final)
 ################
 # predictions  #
 ################
+
+
+fric_ts<-select(stab_444,Site,UniqueID,lg2SppN,TS_lg2,FRic4)
+
+fric_ts$pred<-predict(final,fric_ts,re.form=~(~1+lg2SppN*FRic4|Site))
+
+fric_ts$TS<-2^(fric_ts$TS_lg2)
+fric_ts$pred_t<-2^(fric_ts$pred)
+
+newdat <- expand.grid(FRic4=seq(from=0,to=10.3,by=0.1))
+newdat$pred <- predict(final, newdat, level = 0)
+
+Designmat <- model.matrix(formula(final)[-2], newdat)
+predvar <- diag(Designmat %*% vcov(final) %*% t(Designmat)) 
+newdat$SE <- sqrt(predvar) 
+
+
+newdat$p_lCI<-newdat$pred-(newdat$SE*1.96)
+newdat$p_uCI<-newdat$pred+(newdat$SE*1.96)
+
+newdat$pred_t<-2^(newdat$pred)
+newdat$pred_uCIt<-2^(newdat$p_uCI)
+newdat$pred_lCIt<-2^(newdat$p_lCI)
+
+
+f<-ggplot(data=fric_ts,aes(x=FRic4,y=pred_t))+
+  
+  geom_smooth(data=fric_ts,aes(y=pred_t,x=FRic4,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=FRic4),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  
+  
+  labs(x="Functional diversity (FRic)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
+
+FRic<-f+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
+               axis.title.y=element_text(colour="black",face="bold",size=8,vjust=1),
+               axis.text.y=element_text(colour="black",face="bold",size=8),
+               axis.text.x=element_text(colour="black",face="bold",size=8),
+               plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
+               panel.background = element_rect(fill = "white"))
 
 
 #PCAdim1_4trts
@@ -536,17 +583,17 @@ newdat$pred_uCIt<-2^(newdat$p_uCI)
 newdat$pred_lCIt<-2^(newdat$p_lCI)
 
 
-f<-ggplot(data=fs_ts,aes(x=PCAdim1_4trts,y=pred_t))+
+gg<-ggplot(data=fs_ts,aes(x=PCAdim1_4trts,y=pred_t))+
   
   geom_smooth(data=fs_ts,aes(y=pred_t,x=PCAdim1_4trts,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
-  geom_smooth(data=newdat,aes(y=pred_t,x=PCAdim1_4trts),method="lm",formula=y~x,size=1,color="gray35",se=FALSE)+
-  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  #geom_smooth(data=newdat,aes(y=pred_t,x=PCAdim1_4trts),method="lm",formula=y~x,size=1,color="gray35",se=FALSE)+
+  #geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
   labs(x="Fast-slow spectrum ",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
-  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(1,16),breaks=c(1,2,4,8,16))
+  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
-FStrt<-f+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
+FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
                axis.title.y=element_blank(),
                axis.text.y=element_text(colour="black",face="bold",size=8),
                axis.text.x=element_text(colour="black",face="bold",size=8),
@@ -555,6 +602,7 @@ FStrt<-f+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
 
 
 #
+
 png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Biodiv_TS.png", 
     units="in", 
     width=9, 
