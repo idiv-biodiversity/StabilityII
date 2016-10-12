@@ -13,11 +13,10 @@ stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_L
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
-stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony)
+stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony,annualTemp,meanPrecip,meanPET,CV_Temp,CV_Precip)
 
 stab_4$Plot_Asynchrony<-ifelse(stab_4$SppN==1 & is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) # for monocultures, we assume that a species
 #is perfectly synchronized with itself
-
 
 
 stab_4$SppN<-as.numeric(stab_4$SppN)
@@ -94,6 +93,24 @@ AIC(e,e1,e2)
 plot(e2)
 qqnorm(e2)
 
+f<-lme(Plot_Asynchrony~CV_Precip,random=~1|Site,control=cc,data=stab_444)
+f1<-lme(Plot_Asynchrony~CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+
+AIC(f,f1)
+
+plot(f1)
+qqnorm(f1)
+
+g<-lme(TS_lg2~CV_Precip,random=~1|Site,control=cc,data=stab_444)
+g1<-lme(TS_lg2~CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+
+AIC(g,g1)
+
+plot(f1)
+qqnorm(f1)
+
+
+
 g<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
 g1<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
 g2<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+eMNTD|Site,control=cc,data=stab_444)
@@ -122,252 +139,6 @@ f3<-lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1|Site/SppN, control=cc
 
 AIC(f,f1,f3)
 
-######################
-# piecewise SEM  #####
-# without synchrony  #
-######################
-
-
-modList=list(
-  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
-)
-
-
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
-
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) 
-
-ts_emntd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"))
-
-
-mf_ts_emntd<-sem.model.fits(modList)
-mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","F-S,eMNTD,FDis4,lg2SppN")
-
-
-resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_444,list(lmeControl(opt="optim")))
-resids.df2<-partial.resid(TS_lg2~eMNTD,modList,data=stab_444,list(lmeControl(opt="optim")))
-resids.df3<-partial.resid(TS_lg2~FDis4,modList,data=stab_444,list(lmeControl(opt="optim")))
-resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
-
-
-write.table(ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_noSYNC.csv",sep=",",row.names=F)
-
-#############
-# Visualize #
-#############
-
-#devtools::install_github('rich-iannone/DiagrammeR')
-require(DiagrammeR)
-require(stringr)
-require(semPlot)
-
-
-# Describe edges
-
-paths <- ts_emntd %>%
-  select(response,predictor, estimate,p.value)
-
-#paths<-paths[1:8,]
-
-paths$response<-as.character(paths$response)
-paths$predictor<-as.character(paths$predictor)
-
-
-paths$arrowtail<-grepl("~~ ", paths$response)
-paths$arrowtail<-ifelse(paths$arrowtail==FALSE,"none","normal")
-paths$response<-str_replace_all(paths$response, "~~ ", "")
-paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-
-paths$response<-ifelse(paths$response=="PCAdim1_4trts","F-S",paths$response)
-paths$response<-ifelse(paths$response=="eMNTD","PD",paths$response)
-paths$response<-ifelse(paths$response=="FDis4","FD",paths$response)
-#paths$response<-ifelse(paths$response=="Plot_Asynchrony","&#951;",paths$response)
-paths$response<-ifelse(paths$response=="TS_lg2","1/CV",paths$response)
-paths$predictor<-ifelse(paths$predictor=="lg2SppN","SR",paths$predictor)
-#paths$predictor<-ifelse(paths$predictor=="Plot_Asynchrony","&#951;",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="PCAdim1_4trts","F-S",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="FDis4","FD",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="eMNTD","PD",paths$predictor)
-
-
-#paths$predictor<-as.character(paths$predictor)
-#paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-paths$color<-ifelse(paths$p.value<0.05,"black","gray50")
-
-paths$style<-ifelse(paths$estimate>0,"solid","dashed")
-paths$weight<-abs(paths$estimate)
-
-colnames(paths)[1]<-"to"
-colnames(paths)[2]<-"from"
-
-paths$rel<-"leading_to"
-
-#s<-round(paths$values,2)
-
-paths$labels<-round(paths$estimate,2)
-#paths<-select(paths,from, to, rel, weight,style,labels,color)
-
-paths$labels<-as.character(paths$labels)
-
-paths$dir<-ifelse(paths$arrowtail=="none","forward","both")
-
-###Create nodes
-nn1<-data.frame(unique(paths$from))
-colnames(nn1)[1]<-"nodes"
-nn2<-data.frame(unique(paths$to))
-colnames(nn2)[1]<-"nodes"
-
-nodes<-rbind.data.frame(nn1,nn2)
-nodes<-unique(nodes)
-
-nodess<-create_nodes(nodes = nodes$nodes,
-                     label = as.character(nodes$nodes),
-                     type = "lower",
-                     style = "empty",
-                     color = "black",
-                     shape = c("rectangle"))
-
-##Create edgges
-
-edgess <-
-  create_edges(from = paths$from,
-               to = paths$to,
-               rel = paths$rel,
-               color = paths$color,
-               style = paths$style,
-               #label= paths$labels,
-               arrowtail=paths$arrowtail,
-               arrowhead="normal", dir=paths$dir,
-               penwidth = paths$weight)
-
-# create graph
-
-my_graph <- create_graph(
-  nodes_df = nodess, 
-  edges_df = edgess, 
-  edge_attrs= "fontsize = 6",
-  graph_attrs = c("layout = circo"),
-  directed=TRUE)
-
-graph <-
-  my_graph %>%
-  #rescale_edge_attrs(
-  #"weight", "gray80", "gray20", "color") %>%
-  rescale_edge_attrs(
-    "penwidth", 0.5, 4, "penwidth")
-
-render_graph(graph)
-
-######################
-# hypothetical model:
-# sans synchrony ####
-#####################
-
-
-hyp=list(
-  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
-)
-
-
-sem.fit(hyp,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
-
-hyp<-sem.coefs(hyp,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4"))
-hyp$estimate<-0.5
-
-paths <- hyp %>%
-  select(response,predictor, estimate,p.value)
-
-#paths<-paths[1:8,]
-
-paths$response<-as.character(paths$response)
-paths$predictor<-as.character(paths$predictor)
-
-
-paths$arrowtail<-grepl("~~ ", paths$response)
-paths$arrowtail<-ifelse(paths$arrowtail==FALSE,"none","normal")
-paths$response<-str_replace_all(paths$response, "~~ ", "")
-paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-
-paths$response<-ifelse(paths$response=="PCAdim1_4trts","F-S",paths$response)
-paths$response<-ifelse(paths$response=="eMNTD","PD",paths$response)
-paths$response<-ifelse(paths$response=="FDis4","FD",paths$response)
-#paths$response<-ifelse(paths$response=="Plot_Asynchrony","&#951;",paths$response)
-paths$response<-ifelse(paths$response=="TS_lg2","1/CV",paths$response)
-paths$predictor<-ifelse(paths$predictor=="lg2SppN","SR",paths$predictor)
-#paths$predictor<-ifelse(paths$predictor=="Plot_Asynchrony","&#951;",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="PCAdim1_4trts","F-S",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="FDis4","FD",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="eMNTD","PD",paths$predictor)
-
-
-#paths$predictor<-as.character(paths$predictor)
-#paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-#paths$color<-ifelse(paths$p.value<0.05,"black","gray50")
-
-#paths$style<-ifelse(paths$estimate>0,"solid","dashed")
-paths$weight<-paths$estimate
-
-colnames(paths)[1]<-"to"
-colnames(paths)[2]<-"from"
-
-paths$rel<-"leading_to"
-paths$dir<-ifelse(paths$arrowtail=="none","forward","both")
-
-###Create nodes
-nn1<-data.frame(unique(paths$from))
-colnames(nn1)[1]<-"nodes"
-nn2<-data.frame(unique(paths$to))
-colnames(nn2)[1]<-"nodes"
-
-nodes<-rbind.data.frame(nn1,nn2)
-nodes<-unique(nodes)
-
-nodess<-create_nodes(nodes = nodes$nodes,
-                     label = as.character(nodes$nodes),
-                     type = "lower",
-                     style = "empty",
-                     color = "black",
-                     shape = c("rectangle"))
-
-##Create edgges
-
-edgess <-
-  create_edges(from = paths$from,
-               to = paths$to,
-               rel = paths$rel,
-               color = "black",
-               style ="solid",
-               #label= paths$labels,
-               arrowtail=paths$arrowtail,
-               arrowhead="normal", dir=paths$dir,
-               penwidth = paths$weight)
-
-# create graph
-
-my_graph <- create_graph(
-  nodes_df = nodess, 
-  edges_df = edgess, 
-  edge_attrs= "fontsize = 6",
-  graph_attrs = c("layout = circo"),
-  directed=TRUE)
-
-render_graph(my_graph)
-
-
 
 ######################
 # piecewise SEM  #####
@@ -378,129 +149,66 @@ render_graph(my_graph)
 modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN+FDis4+PCAdim1_4trts+eMNTD|Site,control=bb,data=stab_444),
-  lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+lg2SppN+eMNTD,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+  lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN|Site,control=bb,data=stab_444),
+  lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+lg2SppN+eMNTD+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
 sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+emntdfdis.fit<-sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
         model.control = list(lmeControl(opt = "optim")))  # add eMNTD as predictor of TS
 
+emntdfdis.fit<-cbind(emntdfdis.fit$Fisher.C,emntdfdis.fit$AIC)
+emntdfdis.fit$ModClass<-"FDis_eMNTD"
+
 ts_emntd2<-sem.coefs(modList2,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"))
+ts_emntd2$ModClass<-"FDis_eMNTD"
 
 
 mf_ts_emntd<-sem.model.fits(modList2)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Asynchrony","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4,F-S","eMNTD,Asynchrony,lg2SppN")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4,F-S","eMNTD,Asynchrony,lg2SppN,CV_Precip")
+mf_ts_emntd$ModClass<-"FDis_eMNTD"
+
+write.table(ts_emntd2,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_Oct2016.csv",sep=",",row.names=F)
+
+##################
+# FDis_eMPD ######
+##################
 
 
-resids.df1<-partial.resid(TS_lg2~lg2SppN,modList2,data=stab_444,list(lmeControl(opt="optim")))
-resids.df2<-partial.resid(TS_lg2~eMNTD,modList2,data=stab_444,list(lmeControl(opt="optim")))
-resids.df3<-partial.resid(TS_lg2~FDis4,modList2,data=stab_444,list(lmeControl(opt="optim")))
-resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList2,data=stab_444,list(lmeControl(opt="optim")))
-resids.df6<-partial.resid(TS_lg2~Plot_Asynchrony,modList2,data=stab_444,list(lmeControl(opt="optim")))
-
-
-
-
-#############
-# Visualize #
-#############
-
-
-hyp2=list(
-  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+modList2=list(
+  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+  lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMPD,random=~1+lg2SppN|Site,control=bb,data=stab_444),
+  lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+lg2SppN+eMPD+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
-sem.fit(hyp2,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
+sem.fit(modList2,stab_444,corr.errors=c("eMPD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-hyp22<-sem.coefs(modList2,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4"))
+empdfdis.fit<-sem.fit(modList2,stab_444,corr.errors=c("eMPD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+                       model.control = list(lmeControl(opt = "optim")))  # add eMNTD as predictor of TS
+
+empdfdis.fit<-cbind(empdfdis.fit$Fisher.C,empdfdis.fit$AIC)
+empdfdis.fit$ModClass<-"FDis_eMPD"
+
+ts_empd2<-sem.coefs(modList2,stab_444,standardize="scale",corr.errors=c("eMPD~~FDis4","FDis4 ~~ PCAdim1_4trts"))
+ts_empd2$ModClass<-"FDis_eMPD"
 
 
-# Describe edges
+mf_ts_empd<-sem.model.fits(modList2)
+mf_ts_empd$ResponseVars<-c("eMPD","FDis4","Asynchrony","Temp_Stability")
+mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FDis4,F-S","eMPD,Asynchrony,lg2SppN,CV_Precip")
+mf_ts_empd$ModClass<-"FDis_eMPD"
 
-paths <- hyp22 %>%
-  select(response,predictor, estimate,p.value)
+write.table(ts_empd2,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(empdfdis.fit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfit_Oct2016.csv",sep=",",row.names=F)
 
-#paths<-paths[1:8,]
-
-paths$response<-as.character(paths$response)
-paths$predictor<-as.character(paths$predictor)
-
-
-paths$arrowtail<-grepl("~~ ", paths$response)
-paths$arrowtail<-ifelse(paths$arrowtail==FALSE,"none","normal")
-paths$response<-str_replace_all(paths$response, "~~ ", "")
-paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-
-paths$response<-ifelse(paths$response=="PCAdim1_4trts","F-S",paths$response)
-paths$response<-ifelse(paths$response=="eMNTD","PD",paths$response)
-paths$response<-ifelse(paths$response=="FDis4","FD",paths$response)
-paths$response<-ifelse(paths$response=="Plot_Asynchrony","&#951;",paths$response)
-paths$response<-ifelse(paths$response=="TS_lg2","1/CV",paths$response)
-paths$predictor<-ifelse(paths$predictor=="lg2SppN","SR",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="Plot_Asynchrony","&#951;",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="PCAdim1_4trts","F-S",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="FDis4","FD",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="eMNTD","PD",paths$predictor)
-
-paths$estimate<-0.5
-
-paths$weight<-abs(paths$estimate)
-
-colnames(paths)[1]<-"to"
-colnames(paths)[2]<-"from"
-
-paths$rel<-"leading_to"
-
-paths$dir<-ifelse(paths$arrowtail=="none","forward","both")
-
-###Create nodes
-nn1<-data.frame(unique(paths$from))
-colnames(nn1)[1]<-"nodes"
-nn2<-data.frame(unique(paths$to))
-colnames(nn2)[1]<-"nodes"
-
-nodes<-rbind.data.frame(nn1,nn2)
-nodes<-unique(nodes)
-
-nodess<-create_nodes(nodes = nodes$nodes,
-                     label = as.character(nodes$nodes),
-                     type = "lower",
-                     style = "empty",
-                     color = "black",
-                     shape = c("rectangle"))
-
-##Create edgges
-
-edgess <-
-  create_edges(from = paths$from,
-               to = paths$to,
-               rel = paths$rel,
-               color = "black",
-               style = "solid",
-               #label= paths$labels,
-               arrowtail=paths$arrowtail,
-               arrowhead="normal", dir=paths$dir,
-               penwidth = paths$weight)
-
-# create graph
-
-my_graph <- create_graph(
-  nodes_df = nodess, 
-  edges_df = edgess, 
-  edge_attrs= "fontsize = 6",
-  graph_attrs = c("layout = circo"),
-  directed=TRUE)
-
-render_graph(my_graph)
-
+[STOP HERE]
