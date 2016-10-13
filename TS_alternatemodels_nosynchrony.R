@@ -29,97 +29,9 @@ stab_4$lg2SppN <- log(stab_4$SppN,2)
 stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
-
-####################
-# Prelim       #####
-####################
-
 bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
 cc<-lmeControl(opt="optim")
 
-
-a<-lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-a1<-lme(eMNTD~lg2SppN,random=~1|Site,control=cc,data=stab_444)
-
-AIC(a,a1)
-
-plot(a1)
-qqnorm(a1)
-
-
-b<-lme(FDis4~lg2SppN,random=~1|Site, control=cc,data=stab_444)
-b1<-lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-AIC(b,b1)
-
-plot(b1)
-qqnorm(b1)
-
-
-c<-lme(Plot_Asynchrony~lg2SppN,random=~1|Site,control=cc,data=stab_444)
-c1<-lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-
-
-AIC(c,c1)
-
-plot(c1)
-qqnorm(c1)
-
-c<-lme(Plot_Asynchrony~FDis4,random=~1|Site,control=cc,data=stab_444)
-c1<-lme(Plot_Asynchrony~FDis4,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-c2<-lme(Plot_Asynchrony~FDis4,random=~1+FDis4|Site/SppN,control=cc,data=stab_444)
-
-AIC(c,c1,c2)
-
-plot(c2)
-qqnorm(c2)
-
-d<-lme(Plot_Asynchrony~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
-d1<-lme(Plot_Asynchrony~PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-d2<-lme(Plot_Asynchrony~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site/SppN,control=cc,data=stab_444)
-
-
-AIC(d,d1,d2)
-
-plot(d1)
-qqnorm(d1)
-
-
-e<-lme(Plot_Asynchrony~eMNTD,random=~1|Site,control=cc,data=stab_444)
-e1<-lme(Plot_Asynchrony~eMNTD,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-e2<-lme(Plot_Asynchrony~eMNTD,random=~1+eMNTD|Site/SppN,control=cc,data=stab_444)
-
-AIC(e,e1,e2)
-
-plot(e2)
-qqnorm(e2)
-
-g<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
-g1<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-g2<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+eMNTD|Site,control=cc,data=stab_444)
-g3<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+FDis4|Site,control=cc,data=stab_444)
-g4<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN+PCAdim1_4trts|Site,control=cc,data=stab_444)
-g5<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN+eMNTD|Site,control=cc,data=stab_444)
-g6<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+lg2SppN+FDis4|Site,control=cc,data=stab_444)
-g7<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+FDis4|Site,control=cc,data=stab_444)
-g8<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+eMNTD|Site,control=cc,data=stab_444)
-g9<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+FDis4|Site,control=cc,data=stab_444)
-g10<-lme(Plot_Asynchrony~eMNTD+lg2SppN+FDis4+PCAdim1_4trts,random=~1+PCAdim1_4trts+FDis4|Site,control=cc,data=stab_444)
-
-
-AICc(g,g1,g2,g3,g4)
-
-plot(e2)
-qqnorm(e2)
-
-
-
-f<-lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
-f1<-lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1|Site, control=cc,data=stab_444)
-f3<-lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1|Site/SppN, control=cc,data=stab_444)
-
-
-
-AIC(f,f1,f3)
 
 ######################
 # piecewise SEM  #####
@@ -131,238 +43,253 @@ modList=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
 sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+fdis.fit1<-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) 
 
+fdis.fit1<-cbind(fdis.fit1$Fisher.C,fdis.fit1$AIC)
+fdis.fit1$ModClass<-"FDis4_eMNTD"
+
+
 ts_emntd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4","FDis4 ~~ PCAdim1_4trts"))
+ts_emntd$ModClass<-"FDis4_eMNTD"
 
 
 mf_ts_emntd<-sem.model.fits(modList)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","F-S,eMNTD,FDis4,lg2SppN")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","F-S,eMNTD,FDis4,lg2SppN,CV_Precip")
+mf_ts_emntd$ModClass<-"FDis4_eMNTD"
 
 
-resids.df1<-partial.resid(TS_lg2~lg2SppN,modList,data=stab_444,list(lmeControl(opt="optim")))
-resids.df2<-partial.resid(TS_lg2~eMNTD,modList,data=stab_444,list(lmeControl(opt="optim")))
-resids.df3<-partial.resid(TS_lg2~FDis4,modList,data=stab_444,list(lmeControl(opt="optim")))
-resids.df5<-partial.resid(TS_lg2~PCAdim1_4trts,modList,data=stab_444,list(lmeControl(opt="optim")))
+write.table(ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_nosync_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_nosync__model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(fdis.fit1,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_nosync__semfit_Oct2016.csv",sep=",",row.names=F)
+
+###############
+## FDis -eMPD #
+###############
 
 
-write.table(ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_noSYNC.csv",sep=",",row.names=F)
-
-#############
-# Visualize #
-#############
-
-#devtools::install_github('rich-iannone/DiagrammeR')
-require(DiagrammeR)
-require(stringr)
-require(semPlot)
-
-
-# Describe edges
-
-paths <- ts_emntd %>%
-  select(response,predictor, estimate,p.value)
-
-#paths<-paths[1:8,]
-
-paths$response<-as.character(paths$response)
-paths$predictor<-as.character(paths$predictor)
-
-
-paths$arrowtail<-grepl("~~ ", paths$response)
-paths$arrowtail<-ifelse(paths$arrowtail==FALSE,"none","normal")
-paths$response<-str_replace_all(paths$response, "~~ ", "")
-paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-
-paths$response<-ifelse(paths$response=="PCAdim1_4trts","F-S",paths$response)
-paths$response<-ifelse(paths$response=="eMNTD","PD",paths$response)
-paths$response<-ifelse(paths$response=="FDis4","FD",paths$response)
-#paths$response<-ifelse(paths$response=="Plot_Asynchrony","&#951;",paths$response)
-paths$response<-ifelse(paths$response=="TS_lg2","1/CV",paths$response)
-paths$predictor<-ifelse(paths$predictor=="lg2SppN","SR",paths$predictor)
-#paths$predictor<-ifelse(paths$predictor=="Plot_Asynchrony","&#951;",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="PCAdim1_4trts","F-S",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="FDis4","FD",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="eMNTD","PD",paths$predictor)
-
-
-#paths$predictor<-as.character(paths$predictor)
-#paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
-
-paths$color<-ifelse(paths$p.value<0.05,"black","gray50")
-
-paths$style<-ifelse(paths$estimate>0,"solid","dashed")
-paths$weight<-abs(paths$estimate)
-
-colnames(paths)[1]<-"to"
-colnames(paths)[2]<-"from"
-
-paths$rel<-"leading_to"
-
-#s<-round(paths$values,2)
-
-paths$labels<-round(paths$estimate,2)
-#paths<-select(paths,from, to, rel, weight,style,labels,color)
-
-paths$labels<-as.character(paths$labels)
-
-paths$dir<-ifelse(paths$arrowtail=="none","forward","both")
-
-###Create nodes
-nn1<-data.frame(unique(paths$from))
-colnames(nn1)[1]<-"nodes"
-nn2<-data.frame(unique(paths$to))
-colnames(nn2)[1]<-"nodes"
-
-nodes<-rbind.data.frame(nn1,nn2)
-nodes<-unique(nodes)
-
-nodess<-create_nodes(nodes = nodes$nodes,
-                     label = as.character(nodes$nodes),
-                     type = "lower",
-                     style = "empty",
-                     color = "black",
-                     shape = c("rectangle"))
-
-##Create edgges
-
-edgess <-
-  create_edges(from = paths$from,
-               to = paths$to,
-               rel = paths$rel,
-               color = paths$color,
-               style = paths$style,
-               #label= paths$labels,
-               arrowtail=paths$arrowtail,
-               arrowhead="normal", dir=paths$dir,
-               penwidth = paths$weight)
-
-# create graph
-
-my_graph <- create_graph(
-  nodes_df = nodess, 
-  edges_df = edgess, 
-  edge_attrs= "fontsize = 6",
-  graph_attrs = c("layout = circo"),
-  directed=TRUE)
-
-graph <-
-  my_graph %>%
-  #rescale_edge_attrs(
-  #"weight", "gray80", "gray20", "color") %>%
-  rescale_edge_attrs(
-    "penwidth", 0.5, 4, "penwidth")
-
-render_graph(graph)
-
-######################
-# hypothetical model:
-# sans synchrony ####
-#####################
-
-
-hyp=list(
-  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+modList=list(
+  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(TS_lg2~PCAdim1_4trts+FDis4+eMNTD+lg2SppN,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+  lme(TS_lg2~PCAdim1_4trts+FDis4+eMPD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
 
 
-sem.fit(hyp,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FDis4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-hyp<-sem.coefs(hyp,stab_444,standardize="scale",corr.errors=c("eMNTD~~FDis4"))
-hyp$estimate<-0.5
+fdis.fit2<-sem.fit(modList,stab_444,corr.errors=c("eMPD~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+                   model.control = list(lmeControl(opt = "optim"))) 
 
-paths <- hyp %>%
-  select(response,predictor, estimate,p.value)
-
-#paths<-paths[1:8,]
-
-paths$response<-as.character(paths$response)
-paths$predictor<-as.character(paths$predictor)
+fdis.fit2<-cbind(fdis.fit2$Fisher.C,fdis.fit2$AIC)
+fdis.fit2$ModClass<-"FDis4_eMPD"
 
 
-paths$arrowtail<-grepl("~~ ", paths$response)
-paths$arrowtail<-ifelse(paths$arrowtail==FALSE,"none","normal")
-paths$response<-str_replace_all(paths$response, "~~ ", "")
-paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
+ts_empd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FDis4","FDis4 ~~ PCAdim1_4trts"))
+ts_empd$ModClass<-"FDis4_eMPD"
+
+mf_ts_empd<-sem.model.fits(modList)
+mf_ts_empd$ResponseVars<-c("eMPD","FDis4","Temp_Stability")
+mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","F-S,eMPD,FDis4,lg2SppN,CV_Precip")
+mf_ts_empd$ModClass<-"FDis4_eMPD"
 
 
-paths$response<-ifelse(paths$response=="PCAdim1_4trts","F-S",paths$response)
-paths$response<-ifelse(paths$response=="eMNTD","PD",paths$response)
-paths$response<-ifelse(paths$response=="FDis4","FD",paths$response)
-#paths$response<-ifelse(paths$response=="Plot_Asynchrony","&#951;",paths$response)
-paths$response<-ifelse(paths$response=="TS_lg2","1/CV",paths$response)
-paths$predictor<-ifelse(paths$predictor=="lg2SppN","SR",paths$predictor)
-#paths$predictor<-ifelse(paths$predictor=="Plot_Asynchrony","&#951;",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="PCAdim1_4trts","F-S",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="FDis4","FD",paths$predictor)
-paths$predictor<-ifelse(paths$predictor=="eMNTD","PD",paths$predictor)
+write.table(ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_nosync_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_nosync__model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(fdis.fit2,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_nosync__semfit_Oct2016.csv",sep=",",row.names=F)
+
+##############
+# FDis - ePSE#
+##############
+
+modList=list(
+  lme(ePSE~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FDis4+ePSE+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+)
 
 
-#paths$predictor<-as.character(paths$predictor)
-#paths$predictor<-str_replace_all(paths$predictor, "~~ ", "")
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FDis4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #naive model
 
-#paths$color<-ifelse(paths$p.value<0.05,"black","gray50")
+fdis.fit3<-sem.fit(modList,stab_444,corr.errors=c("ePSE~~FDis4","FDis4 ~~ PCAdim1_4trts"),conditional=T,
+                   model.control = list(lmeControl(opt = "optim"))) 
 
-#paths$style<-ifelse(paths$estimate>0,"solid","dashed")
-paths$weight<-paths$estimate
+fdis.fit3<-cbind(fdis.fit3$Fisher.C,fdis.fit3$AIC)
+fdis.fit3$ModClass<-"FDis4_ePSE"
 
-colnames(paths)[1]<-"to"
-colnames(paths)[2]<-"from"
 
-paths$rel<-"leading_to"
-paths$dir<-ifelse(paths$arrowtail=="none","forward","both")
+ts_epse<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FDis4","FDis4 ~~ PCAdim1_4trts"))
+ts_epse$ModClass<-"FDis4_ePSE"
 
-###Create nodes
-nn1<-data.frame(unique(paths$from))
-colnames(nn1)[1]<-"nodes"
-nn2<-data.frame(unique(paths$to))
-colnames(nn2)[1]<-"nodes"
+mf_ts_epse<-sem.model.fits(modList)
+mf_ts_epse$ResponseVars<-c("ePSE","FDis4","Temp_Stability")
+mf_ts_epse$PredVars<-c("lg2SppN","lg2SppN","F-S,ePSE,FDis4,lg2SppN,CV_Precip")
+mf_ts_epse$ModClass<-"FDis4_ePSE"
 
-nodes<-rbind.data.frame(nn1,nn2)
-nodes<-unique(nodes)
 
-nodess<-create_nodes(nodes = nodes$nodes,
-                     label = as.character(nodes$nodes),
-                     type = "lower",
-                     style = "empty",
-                     color = "black",
-                     shape = c("rectangle"))
+write.table(ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fdis_nosync_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fdis_nosync__model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(fdis.fit3,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fdis_nosync__semfit_Oct2016.csv",sep=",",row.names=F)
 
-##Create edgges
+#################
+## FRic - eMNTD #
+#################
 
-edgess <-
-  create_edges(from = paths$from,
-               to = paths$to,
-               rel = paths$rel,
-               color = "black",
-               style ="solid",
-               #label= paths$labels,
-               arrowtail=paths$arrowtail,
-               arrowhead="normal", dir=paths$dir,
-               penwidth = paths$weight)
 
-# create graph
+modList=list(
+  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FRic4+eMNTD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+)
 
-my_graph <- create_graph(
-  nodes_df = nodess, 
-  edges_df = edgess, 
-  edge_attrs= "fontsize = 6",
-  graph_attrs = c("layout = circo"),
-  directed=TRUE)
 
-render_graph(my_graph)
+sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #naive model
 
+fric.fit1<-sem.fit(modList,stab_444,corr.errors=c("eMNTD~~FRic4","FRic4 ~~ PCAdim1_4trts"),conditional=T,
+                   model.control = list(lmeControl(opt = "optim"))) 
+
+fric.fit1<-cbind(fric.fit1$Fisher.C,fric.fit1$AIC)
+fric.fit1$ModClass<-"FRic4_eMNTD"
+
+
+ts_emntd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMNTD~~FRic4","FRic4 ~~ PCAdim1_4trts"))
+ts_emntd$ModClass<-"FRic4_eMNTD"
+
+
+mf_ts_emntd<-sem.model.fits(modList)
+mf_ts_emntd$ResponseVars<-c("eMNTD","FRic4","Temp_Stability")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","F-S,eMNTD,FRic4,lg2SppN,CV_Precip")
+mf_ts_emntd$ModClass<-"FRic4_eMNTD"
+
+
+write.table(ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_nosync_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_nosync__model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(fric.fit1,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_nosync__semfit_Oct2016.csv",sep=",",row.names=F)
+
+###############
+## FDis -eMPD #
+###############
+
+
+modList=list(
+  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FRic4+eMPD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+)
+
+
+sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #naive model
+
+fric.fit2<-sem.fit(modList,stab_444,corr.errors=c("eMPD~~FRic4","FRic4 ~~ PCAdim1_4trts"),conditional=T,
+                   model.control = list(lmeControl(opt = "optim"))) 
+
+fric.fit2<-cbind(fric.fit2$Fisher.C,fric.fit2$AIC)
+fric.fit2$ModClass<-"FRic4_eMPD"
+
+
+ts_empd<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("eMPD~~FRic4","FRic4 ~~ PCAdim1_4trts"))
+ts_empd$ModClass<-"FRic4_eMPD"
+
+mf_ts_empd<-sem.model.fits(modList)
+mf_ts_empd$ResponseVars<-c("eMPD","FRic4","Temp_Stability")
+mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","F-S,eMPD,FRic4,lg2SppN,CV_Precip")
+mf_ts_empd$ModClass<-"FRic4_eMPD"
+
+
+write.table(ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_nosync_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_nosync__model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(fric.fit2,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_nosync__semfit_Oct2016.csv",sep=",",row.names=F)
+
+##############
+# FRic - ePSE#
+##############
+
+modList=list(
+  lme(ePSE~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  #lme(Plot_Asynchrony~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(TS_lg2~PCAdim1_4trts+FRic4+ePSE+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+)
+
+
+sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #naive model
+
+fric.fit3<-sem.fit(modList,stab_444,corr.errors=c("ePSE~~FRic4","FRic4 ~~ PCAdim1_4trts"),conditional=T,
+                   model.control = list(lmeControl(opt = "optim"))) 
+
+fric.fit3<-cbind(fric.fit3$Fisher.C,fric.fit3$AIC)
+fric.fit3$ModClass<-"FRic4_ePSE"
+
+
+ts_epse<-sem.coefs(modList,stab_444,standardize="scale",corr.errors=c("ePSE~~FRic4","FRic4 ~~ PCAdim1_4trts"))
+ts_epse$ModClass<-"FRic4_ePSE"
+
+mf_ts_epse<-sem.model.fits(modList)
+mf_ts_epse$ResponseVars<-c("ePSE","FRic4","Temp_Stability")
+mf_ts_epse$PredVars<-c("lg2SppN","lg2SppN","F-S,ePSE,FRic4,lg2SppN,CV_Precip")
+mf_ts_epse$ModClass<-"FRic4_ePSE"
+
+
+write.table(ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_nosync_sem_coefs_Oct2016.csv",sep=",",row.names=F)
+write.table(mf_ts_epse,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_nosync__model_fits_Oct2016.csv",sep=",",row.names=F)
+write.table(fric.fit3,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_nosync__semfit_Oct2016.csv",sep=",",row.names=F)
+
+
+###############
+# merge files #
+###############
+
+
+fdis_paths1<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_nosync_sem_coefs_Oct2016.csv",sep=",",header=T)
+fdis_R2.1<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_nosync__model_fits_Oct2016.csv",sep=",",header=T)
+fdis_semfit1<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_nosync__semfit_Oct2016.csv",sep=",",header=T)
+
+
+fdis_paths2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_nosync_sem_coefs_Oct2016.csv",sep=",",header=T)
+fdis_R2.2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_nosync__model_fits_Oct2016.csv",sep=",",header=T)
+fdis_semfit2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_nosync__semfit_Oct2016.csv",sep=",",header=T)
+
+fdis_paths3<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fdis_nosync_sem_coefs_Oct2016.csv",sep=",",header=T)
+fdis_R2.3<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fdis_nosync__model_fits_Oct2016.csv",sep=",",header=T)
+fdis_semfit3<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fdis_nosync__semfit_Oct2016.csv",sep=",",header=T)
+
+fric_paths1<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_nosync_sem_coefs_Oct2016.csv",sep=",",header=T)
+fric_R2.1<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_nosync__model_fits_Oct2016.csv",sep=",",header=T)
+fric_semfit1<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_nosync__semfit_Oct2016.csv",sep=",",header=T)
+
+fric_paths2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_nosync_sem_coefs_Oct2016.csv",sep=",",header=T)
+fric_R2.2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_nosync__model_fits_Oct2016.csv",sep=",",header=T)
+fric_semfit2<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_nosync__semfit_Oct2016.csv",sep=",",header=T)
+
+
+fric_paths3<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_nosync_sem_coefs_Oct2016.csv",sep=",",header=T)
+fric_R2.3<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_nosync__model_fits_Oct2016.csv",sep=",",header=T)
+fric_semfit3<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_epse_fric_nosync__semfit_Oct2016.csv",sep=",",header=T)
+
+
+sem_paths_no_sync<-rbind.data.frame(fdis_paths1,fdis_paths2,fdis_paths3,fric_paths1,fric_paths2,fric_paths3)
+sem_paths_no_sync$X<-NULL
+
+write.table(sem_paths_no_sync,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_no_sync_paths_Oct2016.csv",sep=",",row.names=F)
+
+sem_R2_no_sync<-rbind.data.frame(fdis_R2.1,fdis_R2.2,fdis_R2.3,fric_R2.1,fric_R2.2,fric_R2.3)
+write.table(sem_R2_no_sync,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_no_sync_R2_Oct2016.csv",sep=",",row.names=F)
+
+sem_fits_no_sync<-rbind.data.frame(fdis_semfit1,fdis_semfit2,fdis_semfit3,fric_semfit1,fric_semfit2,fric_semfit3)
+write.table(sem_fits_no_sync,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_no_sync_semfits_Oct2016.csv",sep=",",row.names=F)
