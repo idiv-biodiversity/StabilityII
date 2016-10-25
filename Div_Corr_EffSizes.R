@@ -106,6 +106,9 @@ colnames(jjj)[6]<-"upper95"
 
 jjj<-arrange(jjj,Var1,Var2)
 
+
+write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes.csv",sep=",",row.names=F)
+
 corr_mat<-dcast(jjj,Var1~Var2,value.var="r",mean)
 rownames(corr_mat)<-corr_mat$Var1
 corr_mat$Var1<-as.character(corr_mat$Var1)
