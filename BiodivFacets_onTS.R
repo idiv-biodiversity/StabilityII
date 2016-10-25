@@ -706,18 +706,18 @@ FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
 #################
 ################
 
-cairo_ps(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/PD_FD_CWM_onTS.eps",
-         +          family="sans",
-         +          height=6,width=6,
-         +          bg="white")
-png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/PD_FD_CWM_onTS.png", 
+cairo_ps(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/ePSE_FD_CWM_onTS.eps",
+                   family="sans",
+                   height=6,width=6,
+                bg="white")
+png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/ePSE_FD_CWM_onTS.png", 
     units="in", 
     width=6, 
     height=6, 
     pointsize=2, 
     res=200)
 
-plot_grid(emNTD,FDis,FStrt, labels=c("(a)","(b)","(c)"), label_size = 7, ncol=2,align="hv")
+plot_grid(ePSE,FDis,FStrt, labels=c("(a)","(b)","(c)"), label_size = 7, ncol=2,align="hv")
 
 dev.off()
 
