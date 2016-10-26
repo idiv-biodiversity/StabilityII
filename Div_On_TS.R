@@ -10,7 +10,7 @@ stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_L
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
-stab_4<-select(stab,Site,UniqueID,Study_length,SppN,eMPD,eMNTD,ePSE,FDis4,FRic4,PCAdim1_4trts,LeafN, LeafP,SLA, LDMC,
+stab_4<-select(stab,Site,UniqueID,Study_length,SppN,eMPD,eMNTD,ePSE,sMPD,sMNTD,FDis4,FRic4,PCAdim1_4trts,LeafN, LeafP,SLA, LDMC,
                Plot_Biomassxbar, Plot_Biomasssd,Plot_Asynchrony,Plot_TempStab)
 
 stab_4$Plot_Asynchrony<-ifelse(stab_4$SppN==1 & is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) 

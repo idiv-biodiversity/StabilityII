@@ -13,7 +13,7 @@ stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_L
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
-stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony,CV_Temp)
+stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,sMPD, sMNTD,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony,CV_Temp)
 
 stab_4$Plot_Asynchrony<-ifelse(stab_4$SppN==1 & is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) # for monocultures, we assume that a species
 #is perfectly synchronized with itself
@@ -36,7 +36,7 @@ stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 # all predictors of TS ##########
 #################################
 
-stab_corr<-select(stab_444,Site,SppN, eMPD, eMNTD,ePSE, FDis4, FRic4,PCAdim1_4trts,Plot_Asynchrony)
+stab_corr<-select(stab_444,Site,SppN, eMPD, eMNTD,sMPD,sMNTD, FDis4, FRic4,PCAdim1_4trts,Plot_Asynchrony)
 
 n<-length(unique(stab_corr$Site))
 
@@ -109,6 +109,9 @@ jjj<-arrange(jjj,Var1,Var2)
 
 write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes.csv",sep=",",row.names=F)
 
+require(reshape2)
+require(viridis)
+
 corr_mat<-dcast(jjj,Var1~Var2,value.var="r",mean)
 rownames(corr_mat)<-corr_mat$Var1
 corr_mat$Var1<-as.character(corr_mat$Var1)
@@ -117,18 +120,16 @@ corr_mat$Var1<-ifelse(corr_mat$Var1=="PCAdim1_4trts","Fast-slow",corr_mat$Var1)
 
 corr_mat<-select(corr_mat,-Plot_Asynchrony)
 
-colnames(corr_mat)[7]<-"Fast-slow"
+colnames(corr_mat)[8]<-"Fast-slow"
 
 corr_mat$Var1<-NULL
 
 corr_mat[is.nan(corr_mat)] <- 0
 corr_mat<-as.matrix(corr_mat)
 
-
 col<- colorRampPalette(c("red", "white", "blue"))(256)
 
 col2<-plasma(256)
-
 
 ##################
 
