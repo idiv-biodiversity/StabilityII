@@ -4,6 +4,8 @@ library(dplyr)
 
 library(ggplot2)
 
+library(lme4)
+library(AICcmodavg)
 #library(lars)
 
 # Data
@@ -51,4 +53,28 @@ Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
 res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
 res.table
 
-# select CV_Temp :  delta AICc = 1.13
+# select mean PET :  delta AICc = 3.68 
+
+#########################
+
+Cand.set <- list( )
+Cand.set[[1]]<-lm(TS_lg2~meanPrecip,data=stab_clim)
+Cand.set[[2]]<-lm(TS_lg2~meanTemp,data=stab_clim)
+Cand.set[[3]]<-lm(TS_lg2~meanPET,data=stab_clim)
+Cand.set[[4]]<-lm(TS_lg2~CV_Temp,data=stab_clim)
+Cand.set[[5]]<-lm(TS_lg2~CV_Precip,data=stab_clim)
+
+
+Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
+res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
+res.table
+
+# select CV Temp :  delta AICc = 3.68 
+
+
+
+##########################
+
+require(MuMIn)
+
+r.squaredGLMM(Cand.set[[5]])
