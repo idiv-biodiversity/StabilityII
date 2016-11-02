@@ -8,6 +8,8 @@ library(semPlot)
 library(lmerTest)
 library(nlme)
 
+library(car) 
+
 # Data
 stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
 
@@ -165,6 +167,16 @@ modList2=list(
   lme(Plot_Asynchrony~lg2SppN+FDis4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN|Site,control=bb,data=stab_444),
   lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+eMNTD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
 )
+
+
+lapply(modList2, plot)
+
+# Explore distribution of residuals
+
+lapply(modList2, function(i) hist(resid(i)))
+
+# Look at variance inflation factors
+lapply(modList2[3:4], vif)
 
 
 sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FDis4"),conditional=T,

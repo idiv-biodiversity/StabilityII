@@ -62,6 +62,8 @@ final<-lme(TS_lg2~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
 
 r.squaredGLMM(final)
 
+intervals(final, which="fixed")
+
 ###############
 # predictions #
 ###############
