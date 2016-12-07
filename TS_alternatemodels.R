@@ -193,12 +193,55 @@ ts_emntd2$ModClass<-"FDis_eMNTD"
 
 mf_ts_emntd<-sem.model.fits(modList2)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Asynchrony","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4,F-S","eMNTD,Asynchrony,lg2SppN,CV_Precip")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4","eMNTD,Asynchrony,lg2SppN,CV_Precip")
 mf_ts_emntd$ModClass<-"FDis_eMNTD"
 
-write.table(ts_emntd2,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_Dec2016.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_Dec2016.csv",sep=",",row.names=F)
-write.table(emntdfdis.fit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_Dec2016.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_Dec2016.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_Dec2016.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_Dec2016.csv",sep=",",row.names=F)
+
+#######################
+## FRic4 - eMNTD    ###
+#######################
+
+
+modList22=list(
+  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Asynchrony~lg2SppN+FRic4+eMNTD,random=~1+lg2SppN|Site,control=bb,data=stab_444),
+  lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+eMNTD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+)
+
+lapply(modList22, plot)
+
+# Explore distribution of residuals
+
+lapply(modList22, function(i) hist(resid(i)))
+
+# Look at variance inflation factors
+lapply(modList22[3:4], vif)
+
+sem.fit(modList22,stab_444,corr.errors=c("eMNTD~~FRic4"),conditional=T,
+        model.control = list(lmeControl(opt = "optim"))) #naive model
+
+emntdfric.fit<-sem.fit(modList22,stab_444,corr.errors=c("FRic4~~eMNTD","FRic4 ~~ PCAdim1_4trts"),conditional=T,
+                       model.control = list(lmeControl(opt = "optim")))  # add eMNTD as predictor of TS
+
+emntdfric.fit<-cbind(emntdfric.fit$Fisher.C,emntdfric.fit$AIC)
+emntdfric.fit$ModClass<-"FRic_eMNTD"
+
+ts_emntd2<-sem.coefs(modList22,stab_444,standardize="scale",corr.errors=c("eMNTD~~FRic4","FRic4 ~~ PCAdim1_4trts"))
+ts_emntd2$ModClass<-"FRic_eMNTD"
+
+mf_ts_emntd<-sem.model.fits(modList22)
+mf_ts_emntd$ResponseVars<-c("eMNTD","FRic4","Asynchrony","Temp_Stability")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4","Asynchrony,eMNTD,lg2SppN,CV_Precip")
+mf_ts_emntd$ModClass<-"FRic_eMNTD"
+
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_Dec2016.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_Dec2016.csv",sep=",",row.names=F)
+write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_Dec2016.csv",sep=",",row.names=F)
+
 
 ##################
 # FDis_eMPD ######
@@ -307,40 +350,6 @@ write.table(mf_ts_smntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Comm
 write.table(smmntdfdis.fit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smntd_fdis_semfit_Oct2016.csv",sep=",",row.names=F)
 
 
-#######################
-## FRic4 - eMNTD    ###
-#######################
-
-
-
-modList2=list(
-  lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Asynchrony~lg2SppN+FRic4+PCAdim1_4trts+eMNTD,random=~1+lg2SppN|Site,control=bb,data=stab_444),
-  lme(TS_lg2~Plot_Asynchrony+PCAdim1_4trts+eMNTD+lg2SppN+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
-)
-
-
-sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FRic4"),conditional=T,
-        model.control = list(lmeControl(opt = "optim"))) #naive model
-
-emntdfric.fit<-sem.fit(modList2,stab_444,corr.errors=c("FRic4~~eMNTD","FRic4 ~~ PCAdim1_4trts"),conditional=T,
-                       model.control = list(lmeControl(opt = "optim")))  # add eMNTD as predictor of TS
-
-emntdfric.fit<-cbind(emntdfric.fit$Fisher.C,emntdfric.fit$AIC)
-emntdfric.fit$ModClass<-"FRic_eMNTD"
-
-ts_emntd2<-sem.coefs(modList2,stab_444,standardize="scale",corr.errors=c("eMNTD~~FRic4","FRic4 ~~ PCAdim1_4trts"))
-ts_emntd2$ModClass<-"FRic_eMNTD"
-
-mf_ts_emntd<-sem.model.fits(modList2)
-mf_ts_emntd$ResponseVars<-c("eMNTD","FRic4","Asynchrony","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4,F-S","Asynchrony,eMNTD,lg2SppN,CV_Precip")
-mf_ts_emntd$ModClass<-"FRic_eMNTD"
-
-write.table(ts_emntd2,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_Oct2016.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_Oct2016.csv",sep=",",row.names=F)
-write.table(emntdfric.fit,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_Oct2016.csv",sep=",",row.names=F)
 
 ##################
 # FRic_eMPD ######
