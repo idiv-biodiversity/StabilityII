@@ -7,8 +7,14 @@ library(AICcmodavg)
 library(MuMIn)
 library(ggplot2)
 
+ICClme <- function(out) {
+  varests <- as.numeric(VarCorr(out)[1:2])
+  return(paste("ICC =", varests[1]/sum(varests)))
+}
+
+
 # Data
-stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
+stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
@@ -63,6 +69,10 @@ final<-lme(TS_lg2~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
 r.squaredGLMM(final)
 
 intervals(final, which="fixed")
+
+VarCorr(final)
+
+ICClme(final)
 
 ###############
 # predictions #
@@ -142,6 +152,10 @@ anova(big,small)
 final<-lme(TS_lg2~Plot_Asynchrony,random=list(~1+lg2SppN*Plot_Asynchrony|Site),control=cc,data=stab_444,method="REML")
 
 r.squaredGLMM(final)
+
+VarCorr(final)
+
+ICClme(final)
 
 #predictions
 
@@ -251,6 +265,8 @@ anova(big,small)
 
 final<-lme(TS_lg2~eMNTD,random=~1+lg2SppN*eMNTD|Site,control=cc,data=stab_444)
 r.squaredGLMM(final)
+
+ICClme(final)
 
 
 ################
@@ -419,6 +435,9 @@ final<-lme(TS_lg2~FDis4,random=list(~1+lg2SppN+FDis4|Site),control=cc,data=stab_
 
 r.squaredGLMM(final)
 
+ICClme(final)
+
+
 ################
 # predictions  #
 ################
@@ -499,6 +518,7 @@ final<-lme(TS_lg2~FRic4,random=list(~1+lg2SppN*FRic4|Site),control=cc,data=stab_
 
 r.squaredGLMM(final)
 
+ICClme(final)
 
 ################
 # predictions  #
@@ -579,6 +599,9 @@ anova(big,small)
 final<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="REML")
 
 r.squaredGLMM(final)
+
+
+ICClme(final)
 
 ################
 # predictions  #
