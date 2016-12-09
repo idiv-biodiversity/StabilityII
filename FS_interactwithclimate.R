@@ -38,9 +38,9 @@ cc<-lmeControl(opt="optim")
 #PCAdim1_4trts
 
 Cand.set <- list( )
-Cand.set[[1]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+PCAdim1_4trts|Site,control=cc,data=stab_444)
-Cand.set[[2]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+PCAdim1_4trts|Site/SppN,control=cc,data=stab_444)
-Cand.set[[3]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[1]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
 Cand.set[[4]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1|Site/SppN,control=cc,data=stab_444)
 Cand.set[[5]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_444)
 Cand.set[[6]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+lg2SppN*PCAdim1_4trts|Site,control=cc,data=stab_444)
@@ -57,8 +57,8 @@ qqnorm(Cand.set[[7]])
 
 ### LRT
 
-big<-lme(TS_lg2~PCAdim1_4trts*CV_Temp,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
-small<-lme(TS_lg2~PCAdim1_4trts+CV_Temp,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
+big<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
+small<-lme(TS_lg2~1,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
 
 anova(big,small)
 
@@ -72,6 +72,35 @@ r.squaredGLMM(final)
 
 ICClme(final)
 
+
+
+###############
+
+
+ranef_PCA<-ranef(final)
+ranef_PCA$Site<-rownames(ranef_PCA)
+colnames(ranef_PCA)[1]<-"Intercept"
+colnames(ranef_PCA)[3]<-"PCA_slope"
+
+ranef_PCA<-select(ranef_PCA,Site,Intercept,PCA_slope)
+
+
+PCA_range<-summarize(group_by(stab_444, Site),maxPCA=max(PCAdim1_4trts),minPCA=min(PCAdim1_4trts))
+PCA_range$rangePCA<-PCA_range$maxPCA-PCA_range$minPCA
+
+PCA_ss<-merge(ranef_PCA,PCA_range,by.y="Site")
+
+a<-lm(PCA_slope~rangePCA,data=PCA_ss)
+b<-lm(PCA_slope~maxPCA,data=PCA_ss)
+c<-lm(PCA_slope~minPCA,data=PCA_ss)
+
+d<-lm(Intercept~rangePCA,data=PCA_ss)
+e<-lm(Intercept~maxPCA,data=PCA_ss)
+f<-lm(Intercept~minPCA,data=PCA_ss)
+
+
+
+
 ################
 # predictions  #
 ################
@@ -84,36 +113,17 @@ fs_ts$pred<-predict(final,fs_ts,re.form=~(~1+lg2SppN+PCAdim1_4trts|Site))
 fs_ts$TS<-2^(fs_ts$TS_lg2)
 fs_ts$pred_t<-2^(fs_ts$pred)
 
-newdat <- expand.grid(PCAdim1_4trts=seq(from=-3.62,to=4.47,by=0.1))
-newdat$pred <- predict(final, newdat, level = 0)
 
-Designmat <- model.matrix(formula(final)[-2], newdat)
-predvar <- diag(Designmat %*% vcov(final) %*% t(Designmat)) 
-newdat$SE <- sqrt(predvar) 
+fs_ts<-arrange(fs_ts, PCAdim1_4trts)
 
+fs_tss<-filter(fs_ts,Site=="Texas" | Site=="MEND")
 
-newdat$p_lCI<-newdat$pred-(newdat$SE*1.96)
-newdat$p_uCI<-newdat$pred+(newdat$SE*1.96)
-
-newdat$pred_t<-2^(newdat$pred)
-newdat$pred_uCIt<-2^(newdat$p_uCI)
-newdat$pred_lCIt<-2^(newdat$p_lCI)
-
-
-gg<-ggplot(data=fs_ts,aes(x=PCAdim1_4trts,y=pred_t))+
+c<-ggplot(data=fs_tss,aes(x=PCAdim1_4trts,y=pred_t))+
   
-  geom_smooth(data=fs_ts,aes(y=pred_t,x=PCAdim1_4trts,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
-  #geom_smooth(data=newdat,aes(y=pred_t,x=PCAdim1_4trts),method="lm",formula=y~x,size=1,color="gray35",se=FALSE)+
-  #geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  geom_smooth(data=fs_tss,aes(y=pred_t,x=PCAdim1_4trts,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=PCAdim1_4trts),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
-  labs(x="Fast-slow spectrum ",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
-  scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
-
-FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
-                 axis.title.y=element_text(colour="black",face="bold",size=8),
-                 axis.text.y=element_text(colour="black",face="bold",size=8),
-                 axis.text.x=element_text(colour="black",face="bold",size=8),
-                 plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
-                 panel.background = element_rect(fill = "white"))
-
+  labs(x="Plant species richness",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  scale_x_continuous(trans="log2",breaks=c(1,2,4,8,16,32,60)) +   scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
