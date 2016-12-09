@@ -3,10 +3,12 @@ require(dplyr)
 
 # Data
 
-traits<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/Data/Traits/StabII_FStraits.csv",sep=",",header=T)
+
+traits<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Data/Traits/StabII_FStraits.csv",sep=",",header=T)
 
 
-stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
+#############
+stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
@@ -16,6 +18,8 @@ stab_4<-unique(select(stab,Site,Study))
 
 
 togg<-merge(traits,stab_4,by.y.=c("Study","Site"))
+
+
 
 spp_site<-summarise(group_by(togg, Site), SppN=length(unique(SppCode6)))
 
@@ -49,3 +53,12 @@ togg222$leafP_spp<-togg222$leafP_spp/togg222$SppN
 trt_cov<-summarize(group_by(togg222),avgSLA=mean(SLA_spp),avgLDMC=mean(LDMC_spp),avgLeafN=mean(leafN_spp),avgLeafP=mean(leafP_spp))
 
 
+###################3
+
+
+togg2<-unique(select(togg,SppCode6,Trait, DataLevel))
+togg2<-filter(togg2,DataLevel=="Species")
+
+tabb<-summarize(group_by(togg2,Trait),SppN=length(unique(SppCode6)))
+
+tabb$Perc<-tabb$SppN/165
