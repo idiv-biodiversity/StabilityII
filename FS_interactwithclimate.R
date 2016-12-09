@@ -12,17 +12,16 @@ ICClme <- function(out) {
   return(paste("ICC =", varests[1]/sum(varests)))
 }
 
-
 # Data
+
 stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
-stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,eMPD,eMNTD,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony,CV_Precip)
+stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,eMPD,eMNTD,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony,CV_Precip,CV_Temp,annualTemp, meanPrecip)
 
 stab_4$Plot_Asynchrony<-ifelse(stab_4$SppN==1 & is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) # for monocultures, we assume that a species
 #is perfectly synchronized with itself
-
 
 stab_4$SppN<-as.numeric(stab_4$SppN)
 
@@ -39,13 +38,13 @@ cc<-lmeControl(opt="optim")
 #PCAdim1_4trts
 
 Cand.set <- list( )
-Cand.set[[1]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site,control=cc,data=stab_444)
-Cand.set[[2]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+PCAdim1_4trts|Site/SppN,control=cc,data=stab_444)
-Cand.set[[3]]<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site,control=cc,data=stab_444)
-Cand.set[[4]]<-lme(TS_lg2~PCAdim1_4trts,random=~1|Site/SppN,control=cc,data=stab_444)
-Cand.set[[5]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+lg2SppN|Site,control=cc,data=stab_444)
-Cand.set[[6]]<-lme(TS_lg2~PCAdim1_4trts,random=~1+lg2SppN*PCAdim1_4trts|Site,control=cc,data=stab_444)
-Cand.set[[7]]<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444)
+Cand.set[[1]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+PCAdim1_4trts|Site,control=cc,data=stab_444)
+Cand.set[[2]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+PCAdim1_4trts|Site/SppN,control=cc,data=stab_444)
+Cand.set[[3]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1|Site,control=cc,data=stab_444)
+Cand.set[[4]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1|Site/SppN,control=cc,data=stab_444)
+Cand.set[[5]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_444)
+Cand.set[[6]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=~1+lg2SppN*PCAdim1_4trts|Site,control=cc,data=stab_444)
+Cand.set[[7]]<-lme(TS_lg2~PCAdim1_4trts*meanPrecip,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444)
 
 
 Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
@@ -58,8 +57,8 @@ qqnorm(Cand.set[[7]])
 
 ### LRT
 
-big<-lme(TS_lg2~PCAdim1_4trts,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
-small<-lme(TS_lg2~1,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
+big<-lme(TS_lg2~PCAdim1_4trts*CV_Temp,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
+small<-lme(TS_lg2~PCAdim1_4trts+CV_Temp,random=list(~1+lg2SppN+PCAdim1_4trts|Site),control=cc,data=stab_444,method="ML")
 
 anova(big,small)
 

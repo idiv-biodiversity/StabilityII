@@ -142,6 +142,8 @@ qqnorm(Cand.set[[6]])
 ### LRT
 
 big<-lme(TS_lg2~Plot_Asynchrony,random=list(~1+lg2SppN*Plot_Asynchrony|Site),control=cc,data=stab_444,method="ML")
+
+
 small<-lme(TS_lg2~1,random=list(~1+lg2SppN*Plot_Asynchrony|Site),control=cc,data=stab_444,method="ML")
 
 anova(big,small)
@@ -255,7 +257,8 @@ qqnorm(Cand.set[[6]])
 
 ### LRT
 
-big<-lme(TS_lg2~eMNTD,random=~1+lg2SppN*eMNTD|Site,control=cc,data=stab_444,method="ML")
+big<-lme(TS_lg2~eMNTD*CV_Precip,random=~1+lg2SppN*eMNTD|Site,control=cc,data=stab_444,method="ML")
+
 small<-lme(TS_lg2~1,random=~1+lg2SppN*eMNTD|Site,control=cc,data=stab_444,method="ML")
 
 anova(big,small)
