@@ -118,8 +118,8 @@ require(viridis)
 
 jjj<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes.csv",sep=",",header=T)
 
-jjj<-filter(jjj,Var1=="SppN"|Var1=="FDis4" | Var1=="FRic4"|Var1=="eMNTD"|Var1=="PCAdim1_4trts" )
-jjj<-filter(jjj,Var2=="SppN"|Var2=="FDis4" | Var2=="FRic4"|Var2=="eMNTD"|Var2=="PCAdim1_4trts")
+jjj<-filter(jjj,Var1=="SppN"|Var1=="FDis4" | Var1=="FRic4"|Var1=="eMNTD"|Var1=="PCAdim1_4trts" |Var1=="Plot_Asynchrony")
+jjj<-filter(jjj,Var2=="SppN"|Var2=="FDis4" | Var2=="FRic4"|Var2=="eMNTD"|Var2=="PCAdim1_4trts"| Var2=="Plot_Asynchrony")
 
 corr_mat<-dcast(jjj,Var1~Var2,value.var="r",mean)
 
@@ -129,12 +129,12 @@ rownames(corr_mat)<-corr_mat$Var1
 corr_mat$Var1<-as.character(corr_mat$Var1)
 
 corr_mat$Var1<-ifelse(corr_mat$Var1=="PCAdim1_4trts","Fast-slow",corr_mat$Var1)
-#corr_mat$Var1<-ifelse(corr_mat$Var1=="Plot_Asynchrony","Synchrony",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="Plot_Asynchrony","Synchrony",corr_mat$Var1)
 
 #corr_mat<-select(corr_mat,-Plot_Asynchrony)
 
 colnames(corr_mat)[5]<-"Fast-slow"
-#colnames(corr_mat)[6]<-"Synchrony"
+colnames(corr_mat)[6]<-"Synchrony"
 
 corr_mat$Var1<-NULL
 

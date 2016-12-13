@@ -270,7 +270,7 @@ final<-lme(TS_lg2~eMNTD,random=~1+lg2SppN*eMNTD|Site,control=cc,data=stab_444)
 r.squaredGLMM(final)
 
 ICClme(final)
-
+VarCorr(final)
 
 ################
 # predictions  #
@@ -439,7 +439,7 @@ final<-lme(TS_lg2~FDis4,random=list(~1+lg2SppN+FDis4|Site),control=cc,data=stab_
 r.squaredGLMM(final)
 
 ICClme(final)
-
+VarCorr(final)
 
 ################
 # predictions  #
@@ -523,6 +523,8 @@ r.squaredGLMM(final)
 
 ICClme(final)
 
+VarCorr(final)
+
 ################
 # predictions  #
 ################
@@ -605,7 +607,7 @@ r.squaredGLMM(final)
 
 
 ICClme(final)
-
+VarCorr(final)
 ################
 # predictions  #
 ################
