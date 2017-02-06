@@ -119,8 +119,9 @@ SppN<-c+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
                panel.background = element_rect(fill = "white"))
 
 
-##########
-#Plot_Asynchrony
+###################
+#Plot_Asynchrony  #
+###################
 
 Cand.set <- list( )
 Cand.set[[1]]<-lme(TS_lg2~Plot_Asynchrony,random=~1+Plot_Asynchrony|Site,control=cc,data=stab_444)
@@ -191,7 +192,7 @@ c<-ggplot(data=sync_ts,aes(x=Plot_Asynchrony,y=pred_t))+
   geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
-  labs(x=expression(bold(eta)),y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x=expression(bold(paste("Synchrony (",eta,")"))),y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 
@@ -208,7 +209,7 @@ Sync<-c+ theme(axis.title.x=element_text(colour="black",face="bold",size=8),
 
 require(cowplot)
 
-png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Sync_onTS.png", 
+png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/StabilityII/Div_Sync_onTS.png", 
     type="cairo",
     units="in", 
     width=7, 
@@ -217,7 +218,7 @@ png(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level
     res=200)
 
 
-cairo_ps(filename="/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Sync_onTS.eps",
+cairo_ps(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/StabilityII/Div_Sync_onTS.eps",
          family="sans",
          height=4,width=7,
          bg="white")
