@@ -129,12 +129,12 @@ rownames(corr_mat)<-corr_mat$Var1
 corr_mat$Var1<-as.character(corr_mat$Var1)
 
 corr_mat$Var1<-ifelse(corr_mat$Var1=="PCAdim1_4trts","Fast-slow",corr_mat$Var1)
-corr_mat$Var1<-ifelse(corr_mat$Var1=="Plot_Asynchrony","Synchrony",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="Plot_Asynchrony","Asynchrony",corr_mat$Var1)
 
 #corr_mat<-select(corr_mat,-Plot_Asynchrony)
 
 colnames(corr_mat)[5]<-"Fast-slow"
-colnames(corr_mat)[6]<-"Synchrony"
+colnames(corr_mat)[6]<-"Asynchrony"
 
 corr_mat$Var1<-NULL
 
@@ -156,7 +156,7 @@ png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Sta
     res=200)
 
 
-corrplot(corr_mat, method="ellipse",type="upper",col=col,is.corr=TRUE,diag=TRUE,bg="white",tl.pos=TRUE,tl.cex=6,tl.col="black",tl.srt=0,cl.cex=6)
+corrplot(corr_mat, method="ellipse",type="upper",col=col,is.corr=TRUE,diag=TRUE,bg="white",tl.pos=TRUE,tl.cex=5,tl.col="black",tl.srt=0,cl.cex=6)
 
 dev.off()
 

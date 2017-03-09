@@ -192,7 +192,7 @@ c<-ggplot(data=sync_ts,aes(x=Plot_Asynchrony,y=pred_t))+
   geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
-  labs(x=expression(bold(paste("Synchrony (",eta,")"))),y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x=expression(bold(paste("Species asynchrony (",eta," )"))),y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 
