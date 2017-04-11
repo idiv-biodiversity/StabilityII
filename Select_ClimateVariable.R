@@ -25,9 +25,12 @@ stab_4$TS_lg2<-log(stab_4$Plot_TempStab,base=2)
 
 stab_4$lg2SppN <- log(stab_4$SppN,2)
 
+stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
 
 stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
+
+
 
 cc<-lmeControl(opt="optim")
 
@@ -37,44 +40,48 @@ stab_clim<-summarize(group_by(stab_444,Site),meanTS=mean(Plot_TempStab),meanPrec
 
 stab_clim$TS_lg2<-log(stab_clim$meanTS,base=2)
 
+
+stab_clim$meanPrecips<-scale(stab_clim$meanPrecip,scale=T,center=T)
+stab_clim$meanTemps<-scale(stab_clim$meanTemp,scale=T,center=T)
+stab_clim$meanPETs<-scale(stab_clim$meanPET,scale=T,center=T)
+stab_clim$CV_Temps<-scale(stab_clim$CV_Temp,scale=T,center=T)
+stab_clim$CV_Precips<-scale(stab_clim$CV_Precip,scale=T,center=T)
+
+
 ############################
 ## div + climate ###########
 ############################
 
-Cand.set <- list( )
-Cand.set[[1]]<-lmer(TS_lg2~meanPrecip+(1+lg2SppN|Site),data=stab_444)
-Cand.set[[2]]<-lmer(TS_lg2~annualTemp+(1+lg2SppN|Site),data=stab_444)
-Cand.set[[3]]<-lmer(TS_lg2~meanPET+(1+lg2SppN|Site),data=stab_444)
-Cand.set[[4]]<-lmer(TS_lg2~CV_Temp+(1+lg2SppN|Site),data=stab_444)
-Cand.set[[5]]<-lmer(TS_lg2~CV_Precip+(1+lg2SppN|Site),data=stab_444)
-
-
-Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
-res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
-res.table
-
-# select mean PET :  delta AICc = 3.68 
 
 #########################
 
 Cand.set <- list( )
-Cand.set[[1]]<-lm(TS_lg2~meanPrecip,data=stab_clim)
-Cand.set[[2]]<-lm(TS_lg2~meanTemp,data=stab_clim)
-Cand.set[[3]]<-lm(TS_lg2~meanPET,data=stab_clim)
-Cand.set[[4]]<-lm(TS_lg2~CV_Temp,data=stab_clim)
-Cand.set[[5]]<-lm(TS_lg2~CV_Precip,data=stab_clim)
+Cand.set[[1]]<-lm(TS_lg2~meanPrecips,data=stab_clim)
+Cand.set[[2]]<-lm(TS_lg2~meanTemps,data=stab_clim)
+Cand.set[[3]]<-lm(TS_lg2~meanPETs,data=stab_clim)
+Cand.set[[4]]<-lm(TS_lg2~CV_Temps,data=stab_clim)
+Cand.set[[5]]<-lm(TS_lg2~CV_Precips,data=stab_clim)
 
 
 Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
 res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
 res.table
 
-# select CV Temp :  delta AICc = 3.68 
+# select CV Temp :  delta AICc = 1.13
 
-
-
-##########################
+######################
 
 require(MuMIn)
 
-r.squaredGLMM(Cand.set[[5]])
+options(na.action = 'na.fail')
+all_clim<-lm(TS_lg2~meanPrecips+meanTemps+meanPETs+CV_Temps+CV_Precips,data=stab_clim)
+
+vif(all_clim)
+
+dd<-dredge(all_clim)  # only 
+
+importance(dd)
+
+# choose CV_Precips based on relative importance (ie sum of Akaike mdoels)
+
+

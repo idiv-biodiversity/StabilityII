@@ -1,6 +1,6 @@
 require(dplyr)
 require(psych)
-require(dcast2)
+require(reshape2)
 require(metafor)
 require(corrplot)
 
@@ -26,6 +26,9 @@ stab_4$lg2SppN <- log(stab_4$SppN,2)
 
 #stab_44<-filter(stab_4,SppN>1) eliminate monocultures
 
+stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
+
+
 stab_44<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 
 stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
@@ -36,7 +39,7 @@ stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 # all predictors of TS ##########
 #################################
 
-stab_corr<-select(stab_444,Site,SppN, eMNTD,eMPD,FDis4,FRic4,PCAdim1_4trts,Plot_Asynchrony)
+stab_corr<-select(stab_444,Site,SppN, eMNTD,eMPD,FDis4,FRic4,PCAdim1_4trts,PlotAsynchrony_s)
 
 n<-length(unique(stab_corr$Site))
 
@@ -107,7 +110,7 @@ colnames(jjj)[6]<-"upper95"
 jjj<-arrange(jjj,Var1,Var2)
 
 
-write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes.csv",sep=",",row.names=F)
+write.table(jjj,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_April2017.csv",sep=",",row.names=F)
 
 ############################
 # make correlation matrix  #
@@ -116,25 +119,34 @@ write.table(jjj,"/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Le
 require(reshape2)
 require(viridis)
 
-jjj<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes.csv",sep=",",header=T)
+jjj<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_April2017.csv",sep=",",header=T)
 
-jjj<-filter(jjj,Var1=="SppN"|Var1=="FDis4" | Var1=="FRic4"|Var1=="eMNTD"|Var1=="PCAdim1_4trts" |Var1=="Plot_Asynchrony")
-jjj<-filter(jjj,Var2=="SppN"|Var2=="FDis4" | Var2=="FRic4"|Var2=="eMNTD"|Var2=="PCAdim1_4trts"| Var2=="Plot_Asynchrony")
+#jjj<-filter(jjj,Var1=="SppN"|Var1=="FDis4" | Var1=="FRic4"|Var1=="eMNTD"|Var1=="PCAdim1_4trts" |Var1=="PlotAsynchrony_s")
+#jjj<-filter(jjj,Var2=="SppN"|Var2=="FDis4" | Var2=="FRic4"|Var2=="eMNTD"|Var2=="PCAdim1_4trts"| Var2=="PlotAsynchrony_s")
+
+jjj<-filter(jjj,Var1!="eMPD")
+jjj<-filter(jjj,Var2!="eMPD")
 
 corr_mat<-dcast(jjj,Var1~Var2,value.var="r",mean)
 
 corr_mat<-arrange(corr_mat,-eMNTD)
-rownames(corr_mat)<-corr_mat$Var1
 
 corr_mat$Var1<-as.character(corr_mat$Var1)
 
 corr_mat$Var1<-ifelse(corr_mat$Var1=="PCAdim1_4trts","Fast-slow",corr_mat$Var1)
-corr_mat$Var1<-ifelse(corr_mat$Var1=="Plot_Asynchrony","Asynchrony",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="PlotAsynchrony_s","Asynchrony",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="FRic4","FR",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="FDis4","FD",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="eMNTD","MNTD",corr_mat$Var1)
+rownames(corr_mat)<-corr_mat$Var1
 
-#corr_mat<-select(corr_mat,-Plot_Asynchrony)
 
-colnames(corr_mat)[5]<-"Fast-slow"
+colnames(corr_mat)[2]<-"MNTD"
+colnames(corr_mat)[3]<-"FD"
+colnames(corr_mat)[4]<-"FR"
+colnames(corr_mat)[5]<-"Fast-Slow"
 colnames(corr_mat)[6]<-"Asynchrony"
+
 
 corr_mat$Var1<-NULL
 
@@ -143,11 +155,11 @@ corr_mat<-as.matrix(corr_mat)
 
 col<- colorRampPalette(c("red", "white", "blue"))(256)
 
-col2<-plasma(256)
+col2<-magma(256)
 
 ##################
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr.png", 
+png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_April2017.png", 
     type="cairo",
     units="in", 
     width=6, 
@@ -160,7 +172,7 @@ corrplot(corr_mat, method="ellipse",type="upper",col=col,is.corr=TRUE,diag=TRUE,
 
 dev.off()
 
-cairo_ps("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr.eps",
+cairo_ps("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_April2017.eps",
          family="sans",
          height=6,width=6,
          bg="white")
