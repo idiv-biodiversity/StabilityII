@@ -1,33 +1,33 @@
 require(dplyr)
 
 
-sla<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/Data/Traits/StabII_SLA_spplevel.csv",sep=",",header=T)
+sla<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Data/Traits/StabII_SLA_spplevel.csv",sep=",",header=T)
 sla$Trait<-"SLA"
 sla$Value<-sla$SLA
 
 sla<-select(sla,-SLA)
 
-leafn<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/Data/Traits/StabII_LeafN_spplevel.csv",sep=",",header=T)
+leafn<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Data/Traits/StabII_LeafN_spplevel.csv",sep=",",header=T)
 leafn$Trait<-"LeafN"
 leafn$Value<-leafn$LeafN
 leafn<-select(leafn,-LeafN)
 
-ldmc<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/Data/Traits/StabII_LDMC_spplevel.csv",sep=",",header=T)
+ldmc<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Data/Traits/StabII_LDMC_spplevel.csv",sep=",",header=T)
 ldmc$Trait<-"LDMC"
 ldmc$Value<-ldmc$LDMC
 ldmc<-select(ldmc,-LDMC)
 
-leafp<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/Data/Traits/StabII_leafP_spplevel.csv",sep=",",header=T)
+leafp<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Data/Traits/StabII_leafP_spplevel.csv",sep=",",header=T)
 leafp$Trait<-"LeafP"
 leafp$Value<-leafp$LeafP
 leafp<-select(leafp,-LeafP)
 
 traits_spp<-rbind.data.frame(sla,leafn,ldmc,leafp)
 
-spp_site<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/Data/Traits/Site_Study_SppCode6.txt",sep="\t",header=T)
+spp_site<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Data/Traits/Site_Study_SppCode6.txt",sep="\t",header=T)
 spp_site<-unique(select(spp_site,Site,SppCode6))
 
-stab<-read.delim("/home/dylan/Dropbox/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
+stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
