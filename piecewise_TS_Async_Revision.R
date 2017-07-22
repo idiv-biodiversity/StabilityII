@@ -53,6 +53,7 @@ cc<-lmeControl(opt="optim")
 # with Asynchrony  #
 ######################
 
+## TRIAL RUN, just FDis/e-MNTD 
 
 ##################
 # FDis_eMNTD #####
@@ -89,7 +90,7 @@ emntdfdis.fit<-sem.fit(modList2,stab_444,
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim")))  # add eMNTD as predictor of TS
 
-"Plot_Biomassxbar ~~ eMNTD"
+#"Plot_Biomassxbar ~~ eMNTD"
 
 
 emntdfdis.fit<-cbind(emntdfdis.fit$Fisher.C,emntdfdis.fit$AIC)
