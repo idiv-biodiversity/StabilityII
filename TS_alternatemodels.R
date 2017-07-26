@@ -132,8 +132,6 @@ write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigP
 write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_April2017.csv",sep=",",row.names=F)
 write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_April2017.csv",sep=",",row.names=F)
 
-[[STOP HERE]]
-
 ##################
 # FDis_sMPD ######
 ##################

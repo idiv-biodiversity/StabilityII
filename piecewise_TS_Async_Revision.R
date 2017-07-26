@@ -85,8 +85,7 @@ sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~Plot_Bio
 
 emntdfdis.fit<-sem.fit(modList2,stab_444,
                        corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN",
-                                      "Plot_Biomassxbar ~~ FDis4","Plot_Biomasssd ~~ FDis4"),
+                                     "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim")))  # add eMNTD as predictor of TS
 
@@ -98,9 +97,7 @@ emntdfdis.fit$ModClass<-"FDis_eMNTD"
 
 ts_emntd2<-sem.coefs(modList2,stab_444,standardize="scale",
                      corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN",
-                                   "Plot_Biomassxbar ~~ FDis4",
-                                   "Plot_Biomasssd ~~ FDis4"))
+                                   "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
 ts_emntd2$ModClass<-"FDis_eMNTD"
 
 sem.plot(modList2, stab_444, standardize = "scale")
