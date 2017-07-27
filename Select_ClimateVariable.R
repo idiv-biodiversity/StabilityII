@@ -34,45 +34,13 @@ stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
 stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
 
-stab_clim<-summarize(group_by(stab_444,Site),meanTS=mean(Plot_TempStab),meanAsync=mean(PlotAsynchrony_s),
-                     meanBM=mean(Plot_Biomassxbar),meanSD=mean(Plot_Biomasssd),
-                    meanPrecip=mean(meanPrecip),meanTemp=mean(annualTemp),meanPET=mean(meanPET),
-                    CV_Temp=mean(CV_Temp),CV_Precip=mean(CV_Precip))
-
-stab_clim$TS_lg2<-log(stab_clim$meanTS,base=2)
-
-
-stab_clim$meanPrecips<-scale(stab_clim$meanPrecip,scale=T,center=T)
-stab_clim$meanTemps<-scale(stab_clim$meanTemp,scale=T,center=T)
-stab_clim$meanPETs<-scale(stab_clim$meanPET,scale=T,center=T)
-stab_clim$CV_Temps<-scale(stab_clim$CV_Temp,scale=T,center=T)
-stab_clim$CV_Precips<-scale(stab_clim$CV_Precip,scale=T,center=T)
-
-
 ############################
 #Predictor(s) of Stability #
 ############################
 
 
-Cand.set <- list( )
-Cand.set[[1]]<-lm(TS_lg2~meanPrecips,data=stab_clim)
-Cand.set[[2]]<-lm(TS_lg2~meanTemps,data=stab_clim)
-Cand.set[[3]]<-lm(TS_lg2~meanPETs,data=stab_clim)
-Cand.set[[4]]<-lm(TS_lg2~CV_Temps,data=stab_clim)
-Cand.set[[5]]<-lm(TS_lg2~CV_Precips,data=stab_clim)
-
-
-Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
-res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
-res.table
-
-# select CV Temp :  delta AICc = 1.13
-
-######################
-
-
 options(na.action = 'na.fail')
-all_clim<-lm(TS_lg2~meanPrecips+meanTemps+meanPETs+CV_Temps+CV_Precips,data=stab_clim)
+all_clim<-lme(TS_lg2~meanPrecip+annualTemp+CV_Temp+CV_Precip,random=~1+lg2SppN|Site,data=stab_444)
 
 vif(all_clim)
 
@@ -80,71 +48,38 @@ dd<-dredge(all_clim)  # only
 
 importance(dd)
 
-# choose CV_Precips based on relative importance (ie sum of Akaike mdoels)
-
+# choose CV_Precips (.06 importance)
 
 #############################
 # Predictors of Asynchrony ##
 #############################
 
-Cand.set <- list( )
-Cand.set[[1]]<-lm(meanAsync~meanPrecips,data=stab_clim)
-Cand.set[[2]]<-lm(meanAsync~meanTemps,data=stab_clim)
-Cand.set[[3]]<-lm(meanAsync~meanPETs,data=stab_clim)
-Cand.set[[4]]<-lm(meanAsync~CV_Temps,data=stab_clim)
-Cand.set[[5]]<-lm(meanAsync~CV_Precips,data=stab_clim)
-
-
-Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
-res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
-res.table
-
-# select CV Temp :  delta AICc = 5.05
-
-######################
-
-
 options(na.action = 'na.fail')
-all_clim<-lm(meanAsync~meanPrecips+meanTemps+meanPETs+CV_Temps+CV_Precips,data=stab_clim)
+all_clim<-lme(Plot_Asynchrony~meanPrecip+annualTemp+CV_Temp+CV_Precip,random=~1+lg2SppN|Site,data=stab_444)
 
 vif(all_clim)
 
 dd<-dredge(all_clim)  # only 
 
-importance(dd)
-
-# choose CV_Precips based on relative importance (ie sum of Akaike mdoels)
+importance(dd)  # all very low...
 
 
-######################
-# mean biomass #######
-# or sd of biomass ###
-######################
-
-
-Cand.set <- list( )
-Cand.set[[1]]<-lm(meanSD~meanPrecips,data=stab_clim)
-Cand.set[[2]]<-lm(meanSD~meanTemps,data=stab_clim)
-Cand.set[[3]]<-lm(meanSD~meanPETs,data=stab_clim)
-Cand.set[[4]]<-lm(meanSD~CV_Temps,data=stab_clim)
-Cand.set[[5]]<-lm(meanSD~CV_Precips,data=stab_clim)
-
-
-Modnames <- paste("Mod", 1:length(Cand.set), sep = " ")
-res.table <- aictab(cand.set = Cand.set, modnames = Modnames,second.ord = T)
-res.table
-
-# select CV Temp :  delta AICc = 5.05
-
-######################
+#############################
+# Predictors of mean/sd of ##
+# biomass                 ###  
+#############################
 
 
 options(na.action = 'na.fail')
-all_clim<-lm(meanSD~meanPrecips+meanTemps+meanPETs+CV_Temps+CV_Precips,data=stab_clim)
+all_clim<-lme(Plot_Biomassxbar~meanPET+meanPrecip+CV_Temp+CV_Precip,random=~1+lg2SppN|Site,data=stab_444)
 
 vif(all_clim)
 
 dd<-dredge(all_clim)  # only 
 
-importance(dd)
+importance(dd)  # 
+      # xbar biomass: annual temp, cv_temp, cv_precip, mean_precip
+      # sd biomass: annual temp, cv_precip, cv_temp, mean precip
+
+
 
