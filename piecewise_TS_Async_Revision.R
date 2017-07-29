@@ -10,23 +10,34 @@ library(nlme)
 library(car) 
 
 # Data
-stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
+stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
 stab_4<-select(stab,Site,Study_length,UniqueID,SppN,eMPD,eMNTD,ePSE,sMPD,sMNTD,FDis4,FRic4,PCAdim1_4trts,SLA, LDMC, LeafN, LeafP,
-               Plot_TempStab,Plot_Biomassxbar, Plot_Biomasssd, Plot_Asynchrony,annualTemp,meanPrecip,meanPET,CV_Temp,CV_Precip)
+               Plot_TempStab,Plot_Biomassxbar, Plot_Biomasssd,Plot_Asynchrony, Gross_synchrony, Loreau_synchrony,annualTemp,meanPrecip,meanPET,CV_Temp,CV_Precip)
 
-stab_4$Plot_Asynchrony<-ifelse(stab_4$SppN==1 & is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) # for monocultures, we assume that a species
-#is perfectly synchronized with itself
+
+# for plots with ONLY 1 spp, we assume that a species #is perfectly synchronized with itself
+
+stab_4$Plot_Asynchrony<-ifelse(is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) 
+stab_4$Gross_synchrony<-ifelse(is.na(stab_4$Gross_synchrony)==TRUE,1,stab_4$Gross_synchrony) 
+stab_4$Loreau_synchrony<-ifelse(is.na(stab_4$Loreau_synchrony)==TRUE,1,stab_4$Loreau_synchrony) 
+
+# convert synchrony metrics to different scale
+
+stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
+
+stab_4$GrossAsynchrony_s<-stab_4$Gross_synchrony*-1
+
+
+# further adjustments
 
 stab_4$SppN<-as.numeric(stab_4$SppN)
 
 stab_4$TS_lg2<-log(stab_4$Plot_TempStab,base=2)
 
 stab_4$lg2SppN <- log(stab_4$SppN,2)
-
-stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
 
 
 # Filter out NAs for Asynchrony and  FRic4
@@ -46,6 +57,10 @@ stab_555<-filter(stab_555, is.na(LeafP)==FALSE)
 
 bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
 cc<-lmeControl(opt="optim")
+
+####################################
+# EXTENDED SEM including mean + SD #
+####################################
 
 
 ######################
