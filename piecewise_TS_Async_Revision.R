@@ -1,3 +1,10 @@
+####################################
+# EXTENDED SEM including mean + SD #
+######################################
+# added paths for mean and cv_precip #
+# to asynchrony                     ##
+######################################
+
 rm(list=ls()) 
 #require(devtools)
 #install_github("jslefche/piecewiseSEM")
@@ -58,9 +65,6 @@ stab_555<-filter(stab_555, is.na(LeafP)==FALSE)
 bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod="L-BFGS-B")  ######## "msMaxIter=0" is important in here!!!
 cc<-lmeControl(opt="optim")
 
-####################################
-# EXTENDED SEM including mean + SD #
-####################################
 
 
 ######################
@@ -107,12 +111,12 @@ emntdfdis.fit<-sem.fit(modList2,stab_444,
 # add correlated error for eMNTD~~ sd of biomass
 
 emntdfdis.fit<-cbind(emntdfdis.fit$Fisher.C,emntdfdis.fit$AIC)
-emntdfdis.fit$ModClass<-"FDis_eMNTD"
+emntdfdis.fit$ModClass<-"FDis_eMNTD_extended"
 
 ts_emntd2<-sem.coefs(modList2,stab_444,standardize="scale",
                      corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~eMNTD","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
                                    "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
-ts_emntd2$ModClass<-"FDis_eMNTD"
+ts_emntd2$ModClass<-"FDis_eMNTD_extended"
 
 sem.plot(modList2, stab_444, standardize = "scale")
 
@@ -121,11 +125,11 @@ mf_ts_emntd<-sem.model.fits(modList2)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Asynchrony","xbar_Biomass", "sd_Biomass","Temp_Stability")
 mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, cvPrecip","Asynchrony,lg2SppN,F-S,FD,PD, meanPrecip",
                         "Asynchrony,lg2SppN,F-S, cvPrecip","meanBiomass,sdBiomass")
-mf_ts_emntd$ModClass<-"FDis_eMNTD"
+mf_ts_emntd$ModClass<-"FDis_eMNTD_extended"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_July2017.csv",sep=",",row.names=F)
-write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_July2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_Extended_August2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic4 - eMNTD    ###
