@@ -208,11 +208,12 @@ write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipz
 ## FRic - eMPD #######
 #######################
 
+
 modList33=list(
-  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(GrossAsynchrony_s~lg2SppN+FRic4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(TS_lg2~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+meanPrecip+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_444)
+  lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_666),
+  lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_666),
+  lme(GrossAsynchrony_s~lg2SppN+FRic4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_666),
+  lme(TS_lg2~GrossAsynchrony_s+FRic4+PCAdim1_4trts+lg2SppN+meanPrecip+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_666)
 )
 
 
@@ -225,26 +226,25 @@ lapply(modList33, function(i) hist(resid(i)))
 # Look at variance inflation factors
 lapply(modList33[3:4], vif)
 
-
-sem.fit(modList33,stab_444,corr.errors=c("eMPD~~FRic4"),conditional=T,
+sem.fit(modList33,stab_666,corr.errors=c("eMPD~~FRic4"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #naive model
 
-smpdfdis.fit<-sem.fit(modList33,stab_444,corr.errors=c("eMPD~~FRic4","FRic4 ~~ PCAdim1_4trts"," eMPD ~~ PCAdim1_4trts"),conditional=T,
+smpdfdis.fit<-sem.fit(modList33,stab_666,corr.errors=c("eMPD~~FRic4","eMPD ~~ PCAdim1_4trts"),conditional=T,
                       model.control = list(lmeControl(opt = "optim")))  
 
 
 smpdfdis.fit<-cbind(smpdfdis.fit$Fisher.C,smpdfdis.fit$AIC)
-smpdfdis.fit$ModClass<-"FRic4_eMPD"
+smpdfdis.fit$ModClass<-"FRic4_eMPD_LongTerm"
 
-ts_smpd2<-sem.coefs(modList33,stab_444,standardize="scale",corr.errors=c("eMPD~~FRic4","FRic4 ~~ PCAdim1_4trts"," eMPD ~~ PCAdim1_4trts"))
-ts_smpd2$ModClass<-"FRic4"
+ts_smpd2<-sem.coefs(modList33,stab_666,standardize="scale",corr.errors=c("eMPD~~FRic4","eMPD ~~ PCAdim1_4trts"))
+ts_smpd2$ModClass<-"FRic4_eMPD_LongTerm"
 
 
 mf_ts_smpd<-sem.model.fits(modList33)
 mf_ts_smpd$ResponseVars<-c("eMPD","FRic4","Asynchrony","Temp_Stability")
-mf_ts_smpd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FRic4,meanPrecip,CV_Precip","Asynchrony,F-S,lg2SppN,meanPrecip,CV_Precip")
-mf_ts_smpd$ModClass<-"FRic4_eMPD"
+mf_ts_smpd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FRic4,meanPrecip,CV_Precip","Asynchrony,FRic4,F-S,lg2SppN,meanPrecip,CV_Precip")
+mf_ts_smpd$ModClass<-"FRic4_eMPD_LongTerm"
 
-write.table(ts_smpd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_SIMPLE_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_smpd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_SIMPLE_July2017.csv",sep=",",row.names=F)
-write.table(smpdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_semfit_SIMPLE_July2017.csv",sep=",",row.names=F)
+write.table(ts_smpd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_LongTerm_SIMPLE_July2017.csv",sep=",",row.names=F)
+write.table(mf_ts_smpd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_LongTerm_SIMPLE_July2017.csv",sep=",",row.names=F)
+write.table(smpdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_semfit_LongTermSIMPLE_July2017.csv",sep=",",row.names=F)
