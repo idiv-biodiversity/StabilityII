@@ -79,7 +79,7 @@ cc<-lmeControl(opt="optim")
 modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(PlotAsynchrony_s~lg2SppN+FDis4+eMNTD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(PlotAsynchrony_s~lg2SppN+FDis4+eMNTD+meanPrecip+CV_Precip+meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(Plot_Biomassxbar~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+eMNTD+FDis4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
   lme(Plot_Biomasssd~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
@@ -97,14 +97,14 @@ lapply(modList2, function(i) hist(resid(i)))
 lapply(modList2[3:6], vif)
 
 
-sem.fit(modList2,stab_444,corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                        "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
+sem.fit(modList2,stab_444,corr.errors=c("eMNTD ~~ FDis4","Plot_Biomasssd ~~ Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
+                                        "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #initial model
 
 
 emntdfdis.fit<-sem.fit(modList2,stab_444,
-                       corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~eMNTD","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),
+                       corr.errors=c("eMNTD ~~ FDis4","Plot_Biomasssd ~~ Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
+                                     "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ PlotAsynchrony_s","TS_lg2 ~~ lg2SppN","eMNTD ~~ Plot_Biomasssd"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
 
@@ -114,8 +114,8 @@ emntdfdis.fit<-cbind(emntdfdis.fit$Fisher.C,emntdfdis.fit$AIC)
 emntdfdis.fit$ModClass<-"FDis_eMNTD_extended"
 
 ts_emntd2<-sem.coefs(modList2,stab_444,standardize="scale",
-                     corr.errors=c("eMNTD~~FDis4","Plot_Biomasssd~~eMNTD","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FDis4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
+                     corr.errors=c("eMNTD ~~ FDis4","Plot_Biomasssd ~~ Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
+                                        "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ PlotAsynchrony_s","TS_lg2 ~~ lg2SppN","eMNTD ~~ Plot_Biomasssd"))
 ts_emntd2$ModClass<-"FDis_eMNTD_extended"
 
 sem.plot(modList2, stab_444, standardize = "scale")
@@ -134,7 +134,6 @@ write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leip
 #######################
 ## FRic4 - eMNTD    ###
 #######################
-
 
 modList22=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
@@ -164,31 +163,31 @@ sem.fit(modList22,stab_444,corr.errors=c("eMNTD~~FRic4","Plot_Biomasssd~~Plot_Bi
 
 
 emntdfric.fit<-sem.fit(modList22,stab_444,
-                       corr.errors=c("eMNTD~~FRic4","Plot_Biomasssd~~eMNTD","Plot_Biomasssd~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
+                       corr.errors=c("Plot_Biomasssd ~~ eMNTD","Plot_Biomasssd ~~ FRic4","eMNTD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
                                      "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
 
 
-#add correlated errors for emntd and FRicto sd biomass
+#add correlated errors for emntd and FRic to sd biomass
 
 emntdfric.fit<-cbind(emntdfric.fit$Fisher.C,emntdfric.fit$AIC)
-emntdfric.fit$ModClass<-"FRic_eMNTD"
+emntdfric.fit$ModClass<-"FRic_eMNTD_extended"
 
 ts_emntd2<-sem.coefs(modList22,stab_444,standardize="scale",
-                     corr.errors=c("eMNTD~~FRic4","Plot_Biomasssd~~eMNTD","Plot_Biomasssd~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
-ts_emntd2$ModClass<-"FRic_eMNTD"
+                     corr.errors=c("Plot_Biomasssd ~~ eMNTD","Plot_Biomasssd ~~ FRic4","eMNTD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
+                                                                          "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
+ts_emntd2$ModClass<-"FRic_eMNTD_extended"
 
 mf_ts_emntd<-sem.model.fits(modList22)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FRic4","Asynchrony","xbar_Biomass", "sd_Biomass","Temp_Stability")
 mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4, meanPrecip, cvPrecip","Asynchrony,lg2SppN,F-S,FRic4,PD, meanPrecip",
                         "Asynchrony,lg2SppN,F-S, cvPrecip","meanBiomass,sdBiomass")
-mf_ts_emntd$ModClass<-"FRic_eMNTD"
+mf_ts_emntd$ModClass<-"FRic_eMNTD_extended"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_July2017.csv",sep=",",row.names=F)
-write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_July2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_Extended_August2017.csv",sep=",",row.names=F)
 
 ##################
 # FDis_MPD ######
@@ -222,31 +221,32 @@ sem.fit(modList3,stab_444,corr.errors=c("eMPD~~FDis4","Plot_Biomasssd~~Plot_Biom
 
 empdfdis.fit<-sem.fit(modList3,stab_444,
                        corr.errors=c("eMPD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),
+                                     "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN", 
+                                     "eMPD ~~ PCAdim1_4trts"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
 
-# 
+# add correlated erors btw  eMPD & PCAdim1_4trts 
+
 empdfdis.fit<-cbind(empdfdis.fit$Fisher.C,empdfdis.fit$AIC)
-empdfdis.fit$ModClass<-"FDis_eMPD"
+empdfdis.fit$ModClass<-"FDis_eMPD_Extended"
 
 ts_empd2<-sem.coefs(modList3,stab_444,standardize="scale",
                      corr.errors=c("eMPD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
-ts_empd2$ModClass<-"FDis_eMPD"
+                                   "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN","eMPD ~~ PCAdim1_4trts"))
+ts_empd2$ModClass<-"FDis_eMPD_Extended"
 
-sem.plot(modList3, stab_444, standardize = "scale")
-
+#sem.plot(modList3, stab_444, standardize = "scale")
 
 mf_ts_empd<-sem.model.fits(modList3)
 mf_ts_empd$ResponseVars<-c("eMPD","FDis4","Asynchrony","xbar_Biomass", "sd_Biomass","Temp_Stability")
 mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FDis4, meanPrecip, cvPrecip","Asynchrony,lg2SppN,F-S,FD,PD, meanPrecip",
                         "Asynchrony,lg2SppN,F-S, cvPrecip","meanBiomass,sdBiomass")
-mf_ts_empd$ModClass<-"FDis_eMPD"
+mf_ts_empd$ModClass<-"FDis_eMPD_Extended"
 
-write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_empd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_modelfits_July2017.csv",sep=",",row.names=F)
-write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfits_July2017.csv",sep=",",row.names=F)
+write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_modelfits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfits_Extended_August2017.csv",sep=",",row.names=F)
 
 
 ##################
@@ -282,29 +282,31 @@ sem.fit(modList44,stab_444,corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~Plot_Bio
 
 
 empdfric.fit<-sem.fit(modList44,stab_444,
-                       corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),
+                       corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
+                                     "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN",
+                                     "Plot_Biomasssd ~~ FRic4", "eMPD ~~ PCAdim1_4trts"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
 
 
-#add correlated errors for emntd and FRicto sd biomass
+#add correlated errors for empd and FRic to sd biomass
 
 empdfric.fit<-cbind(empdfric.fit$Fisher.C,empdfric.fit$AIC)
-empdfric.fit$ModClass<-"FRic_eMPD"
+empdfric.fit$ModClass<-"FRic_eMPD_Extended"
 
 ts_empd2<-sem.coefs(modList44,stab_444,standardize="scale",
-                     corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
-ts_empd2$ModClass<-"FRic_eMPD"
+                     corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
+                                   "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN",
+                                   "Plot_Biomasssd ~~ FRic4", "eMPD ~~ PCAdim1_4trts"))
+ts_empd2$ModClass<-"FRic_eMPD_Extended"
 
 mf_ts_empd2<-sem.model.fits(modList44)
 mf_ts_empd2$ResponseVars<-c("eMPD","FRic4","Asynchrony","xbar_Biomass", "sd_Biomass","Temp_Stability")
 mf_ts_empd2$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FRic4, meanPrecip, cvPrecip","Asynchrony,lg2SppN,F-S,FRic4,PD, meanPrecip",
                         "Asynchrony,lg2SppN,F-S, cvPrecip","meanBiomass,sdBiomass")
-mf_ts_empd2$ModClass<-"FRic_eMPD"
+mf_ts_empd2$ModClass<-"FRic_eMPD_Extended"
 
-write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_July2017.csv",sep=",",row.names=F)
-write.table(empdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_semfit_July2017.csv",sep=",",row.names=F)
+write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(empdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_semfit_Extended_August2017.csv",sep=",",row.names=F)
 
