@@ -89,7 +89,7 @@ modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(GrossAsynchrony_s~lg2SppN+FDis4+eMNTD+CV_Precip+meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_555),
-  lme(TS_lg2~GrossAsynchrony_s+eMNTD+SLA+lg2SppN+CV_Precip++meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
+  lme(TS_lg2~GrossAsynchrony_s+eMNTD+SLA+lg2SppN+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
 )
 
 
