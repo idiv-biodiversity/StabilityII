@@ -1,3 +1,9 @@
+###############
+# DON'T USE  ##
+###############
+# if so, update asynchrony measure
+##############
+
 #######################################
 # revised piecewise SEM               #
 # with subset (long-term exp. only)   #

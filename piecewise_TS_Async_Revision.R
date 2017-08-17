@@ -79,10 +79,10 @@ cc<-lmeControl(opt="optim")
 modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(PlotAsynchrony_s~lg2SppN+FDis4+eMNTD+meanPrecip+CV_Precip+meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Biomassxbar~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+eMNTD+FDis4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(GrossAsynchrony_s~lg2SppN+FDis4+eMNTD+meanPrecip+CV_Precip+meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Biomassxbar~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+eMNTD+FDis4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
-  lme(Plot_Biomasssd~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(Plot_Biomasssd~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
   lme(TS_lg2~Plot_Biomassxbar+Plot_Biomasssd,random=~1|Site, control=cc,data=stab_444)
 )
@@ -98,13 +98,14 @@ lapply(modList2[3:6], vif)
 
 
 sem.fit(modList2,stab_444,corr.errors=c("eMNTD ~~ FDis4","Plot_Biomasssd ~~ Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                        "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
+                                        "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ GrossAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #initial model
 
 
 emntdfdis.fit<-sem.fit(modList2,stab_444,
                        corr.errors=c("eMNTD ~~ FDis4","Plot_Biomasssd ~~ Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                     "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ PlotAsynchrony_s","TS_lg2 ~~ lg2SppN","eMNTD ~~ Plot_Biomasssd"),
+                                     "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ GrossAsynchrony_s","TS_lg2 ~~ lg2SppN",
+                                     "eMNTD ~~ Plot_Biomasssd"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
 
@@ -115,10 +116,10 @@ emntdfdis.fit$ModClass<-"FDis_eMNTD_extended"
 
 ts_emntd2<-sem.coefs(modList2,stab_444,standardize="scale",
                      corr.errors=c("eMNTD ~~ FDis4","Plot_Biomasssd ~~ Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                        "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ PlotAsynchrony_s","TS_lg2 ~~ lg2SppN","eMNTD ~~ Plot_Biomasssd"))
+                                        "TS_lg2 ~~ FDis4","TS_lg2 ~~ eMNTD","TS_lg2 ~~ GrossAsynchrony_s","TS_lg2 ~~ lg2SppN","eMNTD ~~ Plot_Biomasssd"))
 ts_emntd2$ModClass<-"FDis_eMNTD_extended"
 
-sem.plot(modList2, stab_444, standardize = "scale")
+#sem.plot(modList2, stab_444, standardize = "scale")
 
 
 mf_ts_emntd<-sem.model.fits(modList2)
@@ -138,10 +139,10 @@ write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leip
 modList22=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(PlotAsynchrony_s~lg2SppN+FRic4+eMNTD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Biomassxbar~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+eMNTD+FRic4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(GrossAsynchrony_s~lg2SppN+FRic4+eMNTD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Biomassxbar~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+eMNTD+FRic4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
-  lme(Plot_Biomasssd~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(Plot_Biomasssd~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
   lme(TS_lg2~Plot_Biomassxbar+Plot_Biomasssd,random=~1|Site, control=cc,data=stab_444)
   
@@ -158,13 +159,13 @@ lapply(modList22[3:6], vif)
 
 
 sem.fit(modList22,stab_444,corr.errors=c("eMNTD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                        "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
+                                        "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #initial model
 
 
 emntdfric.fit<-sem.fit(modList22,stab_444,
                        corr.errors=c("Plot_Biomasssd ~~ eMNTD","Plot_Biomasssd ~~ FRic4","eMNTD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),
+                                     "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
 
@@ -175,8 +176,9 @@ emntdfric.fit<-cbind(emntdfric.fit$Fisher.C,emntdfric.fit$AIC)
 emntdfric.fit$ModClass<-"FRic_eMNTD_extended"
 
 ts_emntd2<-sem.coefs(modList22,stab_444,standardize="scale",
-                     corr.errors=c("Plot_Biomasssd ~~ eMNTD","Plot_Biomasssd ~~ FRic4","eMNTD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                                                          "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"))
+                     corr.errors=c("Plot_Biomasssd ~~ eMNTD","Plot_Biomasssd ~~ FRic4","eMNTD~~FRic4",
+                                   "Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
+                                   "TS_lg2~~FRic4","TS_lg2~~eMNTD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN"))
 ts_emntd2$ModClass<-"FRic_eMNTD_extended"
 
 mf_ts_emntd<-sem.model.fits(modList22)
@@ -196,10 +198,10 @@ write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leip
 modList3=list(
   lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(PlotAsynchrony_s~lg2SppN+FDis4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Biomassxbar~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+eMPD+FDis4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(GrossAsynchrony_s~lg2SppN+FDis4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Biomassxbar~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+eMPD+FDis4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
-  lme(Plot_Biomasssd~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(Plot_Biomasssd~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
   lme(TS_lg2~Plot_Biomassxbar+Plot_Biomasssd,random=~1|Site, control=cc,data=stab_444)
 )
@@ -215,13 +217,13 @@ lapply(modList3[3:6], vif)
 
 
 sem.fit(modList3,stab_444,corr.errors=c("eMPD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                        "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
+                                        "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #initial model
 
 
 empdfdis.fit<-sem.fit(modList3,stab_444,
                        corr.errors=c("eMPD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN", 
+                                     "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN", 
                                      "eMPD ~~ PCAdim1_4trts"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
@@ -233,7 +235,7 @@ empdfdis.fit$ModClass<-"FDis_eMPD_Extended"
 
 ts_empd2<-sem.coefs(modList3,stab_444,standardize="scale",
                      corr.errors=c("eMPD~~FDis4","Plot_Biomasssd~~Plot_Biomassxbar","FDis4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN","eMPD ~~ PCAdim1_4trts"))
+                                   "TS_lg2~~FDis4","TS_lg2~~eMPD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN","eMPD ~~ PCAdim1_4trts"))
 ts_empd2$ModClass<-"FDis_eMPD_Extended"
 
 #sem.plot(modList3, stab_444, standardize = "scale")
@@ -257,10 +259,10 @@ write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipz
 modList44=list(
   lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(PlotAsynchrony_s~lg2SppN+FRic4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
-  lme(Plot_Biomassxbar~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+eMPD+FRic4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(GrossAsynchrony_s~lg2SppN+FRic4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_444),
+  lme(Plot_Biomassxbar~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+eMPD+FRic4+meanPrecip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
-  lme(Plot_Biomasssd~PlotAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
+  lme(Plot_Biomasssd~GrossAsynchrony_s+PCAdim1_4trts+lg2SppN+CV_Precip, random=~1+lg2SppN|Site,control=cc, data=stab_444),
   
   lme(TS_lg2~Plot_Biomassxbar+Plot_Biomasssd,random=~1|Site, control=cc,data=stab_444)
   
@@ -277,13 +279,13 @@ lapply(modList44[3:6], vif)
 
 
 sem.fit(modList44,stab_444,corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                         "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
+                                         "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN"),conditional=T,
         model.control = list(lmeControl(opt = "optim"))) #initial model
 
 
 empdfric.fit<-sem.fit(modList44,stab_444,
                        corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                     "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN",
+                                     "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN",
                                      "Plot_Biomasssd ~~ FRic4", "eMPD ~~ PCAdim1_4trts"),
                        conditional=T,
                        model.control = list(lmeControl(opt = "optim"))) 
@@ -296,7 +298,7 @@ empdfric.fit$ModClass<-"FRic_eMPD_Extended"
 
 ts_empd2<-sem.coefs(modList44,stab_444,standardize="scale",
                      corr.errors=c("eMPD~~FRic4","Plot_Biomasssd~~Plot_Biomassxbar","FRic4 ~~ PCAdim1_4trts",
-                                   "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~PlotAsynchrony_s","TS_lg2 ~~ lg2SppN",
+                                   "TS_lg2~~FRic4","TS_lg2~~eMPD","TS_lg2~~GrossAsynchrony_s","TS_lg2 ~~ lg2SppN",
                                    "Plot_Biomasssd ~~ FRic4", "eMPD ~~ PCAdim1_4trts"))
 ts_empd2$ModClass<-"FRic_eMPD_Extended"
 
