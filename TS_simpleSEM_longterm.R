@@ -55,7 +55,6 @@ stab_444<-filter(stab_444, is.na(FRic4)==FALSE)
 
 stab_666<-filter(stab_444, Study_length>4)
 
-
 ######################
 # piecewise SEM  #####
 # with synchrony  ####
@@ -73,7 +72,6 @@ cc<-lmeControl(opt="optim")
 ##################
 # FDis_eMNTD #####
 ##################
-
 
 modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_666),

@@ -66,7 +66,6 @@ bb<-lmeControl(msMaxIter=0,msVerbose = TRUE,opt="optim",maxIter=100,optimMEthod=
 cc<-lmeControl(opt="optim")
 
 
-
 ######################
 # piecewise SEM  #####
 # with Asynchrony  #
