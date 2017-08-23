@@ -9,14 +9,28 @@ is.nan.data.frame <- function(x)
 
 
 # Data
-stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_V.csv",sep=",",header=T)
+stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
-stab_4<-select(stab,Site,UniqueID,SppN,eMPD,eMNTD,ePSE,sMPD, sMNTD,FDis4,FRic4,PCAdim1_4trts,Plot_TempStab,Plot_Asynchrony,CV_Temp)
+stab_4<-select(stab,Site,Study_length,UniqueID,SppN,eMPD,eMNTD,ePSE,sMPD,sMNTD,FDis4,FRic4,PCAdim1_4trts,SLA, LDMC, LeafN, LeafP,
+               Plot_TempStab,Plot_Biomassxbar, Plot_Biomasssd,Plot_Asynchrony, Gross_synchrony, Loreau_synchrony,annualTemp,meanPrecip,meanPET,CV_Temp,CV_Precip)
 
-stab_4$Plot_Asynchrony<-ifelse(stab_4$SppN==1 & is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) # for monocultures, we assume that a species
-#is perfectly synchronized with itself
+
+# for plots with ONLY 1 spp, we assume that a species #is perfectly synchronized with itself
+
+stab_4$Plot_Asynchrony<-ifelse(is.na(stab_4$Plot_Asynchrony)==TRUE,1,stab_4$Plot_Asynchrony) 
+stab_4$Gross_synchrony<-ifelse(is.na(stab_4$Gross_synchrony)==TRUE,1,stab_4$Gross_synchrony) 
+stab_4$Loreau_synchrony<-ifelse(is.na(stab_4$Loreau_synchrony)==TRUE,1,stab_4$Loreau_synchrony) 
+
+# convert synchrony metrics to different scale
+
+stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
+
+stab_4$GrossAsynchrony_s<-stab_4$Gross_synchrony*-1
+
+
+# further adjustments
 
 stab_4$SppN<-as.numeric(stab_4$SppN)
 
@@ -24,22 +38,17 @@ stab_4$TS_lg2<-log(stab_4$Plot_TempStab,base=2)
 
 stab_4$lg2SppN <- log(stab_4$SppN,2)
 
-#stab_44<-filter(stab_4,SppN>1) eliminate monocultures
+# Filter out NAs for Asynchrony and  FRic4
+stab_444<-filter(stab_4, is.na(PlotAsynchrony_s)==FALSE)
+stab_444<-filter(stab_444, is.na(FRic4)==FALSE)
 
-stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
-
-
-stab_44<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
-
-stab_444<-stab_4[!is.na(stab_4$Plot_Asynchrony),]  # no NAs for Plot Asynchrony
-stab_444<-stab_444[!is.na(stab_444$FRic4),]  # no NAs for Plot Asynchrony
 
 #################################
 # calculate correlations among  #
 # all predictors of TS ##########
 #################################
 
-stab_corr<-select(stab_444,Site,SppN, eMNTD,eMPD,FDis4,FRic4,PCAdim1_4trts,PlotAsynchrony_s)
+stab_corr<-select(stab_444,Site,SppN, eMNTD,eMPD,FDis4,FRic4,PCAdim1_4trts,GrossAsynchrony_s)
 
 n<-length(unique(stab_corr$Site))
 
@@ -69,8 +78,7 @@ for(i in 1:n){
 jjj<-do.call(rbind,outt)  
 jjj<-data.frame(jjj)
 
-jjj<-na.omit(jjj)
-
+jjj<-filter(jjj, is.na(corr)==FALSE)
 
 #Calculate effect size (raw correlation coefficient)
 
@@ -110,7 +118,7 @@ colnames(jjj)[6]<-"upper95"
 jjj<-arrange(jjj,Var1,Var2)
 
 
-write.table(jjj,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_April2017.csv",sep=",",row.names=F)
+write.table(jjj,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_August2017.csv",sep=",",row.names=F)
 
 ############################
 # make correlation matrix  #
@@ -119,34 +127,35 @@ write.table(jjj,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/
 require(reshape2)
 require(viridis)
 
-jjj<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_April2017.csv",sep=",",header=T)
+jjj<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_August2017.csv",sep=",",header=T)
 
 #jjj<-filter(jjj,Var1=="SppN"|Var1=="FDis4" | Var1=="FRic4"|Var1=="eMNTD"|Var1=="PCAdim1_4trts" |Var1=="PlotAsynchrony_s")
 #jjj<-filter(jjj,Var2=="SppN"|Var2=="FDis4" | Var2=="FRic4"|Var2=="eMNTD"|Var2=="PCAdim1_4trts"| Var2=="PlotAsynchrony_s")
 
-jjj<-filter(jjj,Var1!="eMPD")
-jjj<-filter(jjj,Var2!="eMPD")
+#jjj<-filter(jjj,Var1!="eMPD")
+#jjj<-filter(jjj,Var2!="eMPD")
 
 corr_mat<-dcast(jjj,Var1~Var2,value.var="r",mean)
 
 corr_mat<-arrange(corr_mat,-eMNTD)
 
 corr_mat$Var1<-as.character(corr_mat$Var1)
-
 corr_mat$Var1<-ifelse(corr_mat$Var1=="PCAdim1_4trts","Fast-slow",corr_mat$Var1)
 corr_mat$Var1<-ifelse(corr_mat$Var1=="PlotAsynchrony_s","Asynchrony",corr_mat$Var1)
 corr_mat$Var1<-ifelse(corr_mat$Var1=="FRic4","FR",corr_mat$Var1)
 corr_mat$Var1<-ifelse(corr_mat$Var1=="FDis4","FD",corr_mat$Var1)
 corr_mat$Var1<-ifelse(corr_mat$Var1=="eMNTD","MNTD",corr_mat$Var1)
+corr_mat$Var1<-ifelse(corr_mat$Var1=="eMPD","MPD",corr_mat$Var1)
+
 rownames(corr_mat)<-corr_mat$Var1
 
-
 colnames(corr_mat)[2]<-"MNTD"
-colnames(corr_mat)[3]<-"FD"
-colnames(corr_mat)[4]<-"FR"
-colnames(corr_mat)[5]<-"Fast-Slow"
-colnames(corr_mat)[6]<-"Asynchrony"
+colnames(corr_mat)[3]<-"MPD"
 
+colnames(corr_mat)[4]<-"FD"
+colnames(corr_mat)[5]<-"FR"
+colnames(corr_mat)[6]<-"Fast-Slow"
+colnames(corr_mat)[7]<-"Asynchrony"
 
 corr_mat$Var1<-NULL
 
@@ -159,7 +168,7 @@ col2<-magma(256)
 
 ##################
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_April2017.png", 
+png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_August2017.png", 
     type="cairo",
     units="in", 
     width=6, 
@@ -168,7 +177,7 @@ png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Sta
     res=200)
 
 
-corrplot(corr_mat, method="ellipse",type="upper",col=col,is.corr=TRUE,diag=TRUE,bg="white",tl.pos=TRUE,tl.cex=5,tl.col="black",tl.srt=0,cl.cex=6)
+corrplot(corr_mat, method="ellipse",type="upper",col=col2,is.corr=TRUE,diag=TRUE,bg="white",tl.pos=TRUE,tl.cex=5,tl.col="black",tl.srt=0,cl.cex=6)
 
 dev.off()
 
