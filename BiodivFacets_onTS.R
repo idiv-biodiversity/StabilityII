@@ -248,7 +248,7 @@ dev.off()
 
 
 Cand.set <- list( )
-Cand.set[[1]]<-lme(TS_lg2~eMNTD,random=~1+eMNTD|Site,control=cc,data=stab_444)
+Cand.set[[1]]<-lme(TS_lg2~eMNTD,random=~1+eMNTD|Site,control=cc,data=cd)
 Cand.set[[2]]<-lme(TS_lg2~eMNTD,random=~1+eMNTD|Site/SppN,control=cc,data=stab_444)
 Cand.set[[3]]<-lme(TS_lg2~eMNTD,random=~1|Site,control=cc,data=stab_444)
 Cand.set[[4]]<-lme(TS_lg2~eMNTD,random=~1|Site/SppN,control=cc,data=stab_444)
