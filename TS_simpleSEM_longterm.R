@@ -2,6 +2,8 @@
 # sensitivity analysis of long-term data sets #
 # using basic model in 'TS_alternatemodels.R' #
 ###############################################
+#update 21.11.2017 add direct paths of FD+PD to stability
+#
 rm(list=ls()) 
 #require(devtools)
 #install_github("jslefche/piecewiseSEM")
@@ -80,6 +82,7 @@ modList2=list(
   lme(TS_lg2~GrossAsynchrony_s+PCAdim1_4trts+eMNTD+FDis4+lg2SppN+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_666)
 )
 
+#START HERE
 
 lapply(modList2, plot)
 
