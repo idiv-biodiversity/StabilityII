@@ -82,7 +82,6 @@ modList2=list(
   lme(TS_lg2~GrossAsynchrony_s+PCAdim1_4trts+eMNTD+FDis4+lg2SppN+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_666)
 )
 
-#START HERE
 
 lapply(modList2, plot)
 
@@ -111,16 +110,17 @@ ts_emntd2$ModClass<-"FDis_eMNTD_LongTerm"
 
 mf_ts_emntd<-sem.model.fits(modList2)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Asynchrony","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, CV_Precip","eMNTD,FDis4,Asynchrony,lg2SppN,meanPrecip,CV_Precip")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, CV_Precip","eMNTD,FDis4,eMNTD,Asynchrony,lg2SppN,meanPrecip,CV_Precip")
 mf_ts_emntd$ModClass<-"FDis_eMNTD_LongTerm"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_LongTerm_SIMPLE_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_LongTerm_SIMPLE_July2017.csv",sep=",",row.names=F)
-write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_LongTerm_SIMPLE_July2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_LongTerm_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_LongTerm_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_LongTerm_SIMPLE_Nov2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic4 - eMNTD    ###
 #######################
+#start here
 
 modList22=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_666),
