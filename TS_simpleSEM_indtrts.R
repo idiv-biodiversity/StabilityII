@@ -68,6 +68,7 @@ cc<-lmeControl(opt="optim")
 # adjustments
 #1)add meanPrecip, with path to asynchrony + stability
 #2) add path from CV_Precip to asynchrony
+#3) add paths from FDis and PD to Asynchrony
 
 #######################
 #  test individual  ###
@@ -89,7 +90,7 @@ modList2=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(GrossAsynchrony_s~lg2SppN+FDis4+eMNTD+CV_Precip+meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_555),
-  lme(TS_lg2~GrossAsynchrony_s+eMNTD+SLA+lg2SppN+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
+  lme(TS_lg2~GrossAsynchrony_s+eMNTD+FDis4+SLA+lg2SppN+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
 )
 
 
@@ -108,7 +109,6 @@ sem.fit(modList2,stab_555,corr.errors=c("eMNTD~~FDis4"),conditional=T,
 emntdfdis.fit<-sem.fit(modList2,stab_555,corr.errors=c("eMNTD~~FDis4","eMNTD ~~ SLA"),conditional=T,
                        model.control = list(lmeControl(opt = "optim")))  
 
-
 emntdfdis.fit<-cbind(emntdfdis.fit$Fisher.C,emntdfdis.fit$AIC)
 emntdfdis.fit$ModClass<-"FDis_eMNTD_SLA"
 
@@ -117,12 +117,12 @@ ts_emntd2$ModClass<-"FDis_eMNTD_SLA"
 
 mf_ts_emntd<-sem.model.fits(modList2)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Asynchrony","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, CV_Precip","eMNTD,Asynchrony,lg2SppN, SLA, meanPrecip,CV_Precip")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, CV_Precip","eMNTD,FDis4,Asynchrony,lg2SppN, SLA, meanPrecip,CV_Precip")
 mf_ts_emntd$ModClass<-"FDis_eMNTD_SLA"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic4 - eMNTD    ###
@@ -133,7 +133,7 @@ modList22=list(
   lme(eMNTD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(GrossAsynchrony_s~lg2SppN+FRic4+eMNTD+CV_Precip+meanPrecip,random=~1+lg2SppN|Site,control=cc,data=stab_555),
-  lme(TS_lg2~GrossAsynchrony_s+SLA+lg2SppN+eMNTD+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
+  lme(TS_lg2~GrossAsynchrony_s+SLA+lg2SppN+eMNTD+FRic4+CV_Precip+meanPrecip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
 )
 
 lapply(modList22, plot)
@@ -159,12 +159,12 @@ ts_emntd2$ModClass<-"FRic_eMNTD_SLA"
 
 mf_ts_emntd<-sem.model.fits(modList22)
 mf_ts_emntd$ResponseVars<-c("eMNTD","FRic4","Asynchrony","Temp_Stability")
-mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4,meanPrecip,CV_Precip","Asynchrony,eMNTD,SLA, lg2SppN,meanPrecip, CV_Precip")
+mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4,meanPrecip,CV_Precip","Asynchrony,eMNTD,FRic,SLA, lg2SppN,meanPrecip, CV_Precip")
 mf_ts_emntd$ModClass<-"FRic_eMNTD_SLA"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
 
 ##################
 # FDis_eMPD ######
@@ -174,7 +174,7 @@ modList3=list(
   lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(FDis4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(GrossAsynchrony_s~lg2SppN+FDis4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_555),
-  lme(TS_lg2~GrossAsynchrony_s+SLA+lg2SppN+meanPrecip+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
+  lme(TS_lg2~GrossAsynchrony_s+SLA+lg2SppN+FDis4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
 )
 
 
@@ -206,9 +206,9 @@ mf_ts_empd$ResponseVars<-c("eMPD","FDis4","Asynchrony","Temp_Stability")
 mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FDis4,meanPrecip,CV_Precip","Asynchrony,lg2SppN,SLA, CV_Precip,meanPrecip")
 mf_ts_empd$ModClass<-"FDis_eMPD_SLA"
 
-write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_empd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfit_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
+write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfit_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic - eMPD #######
@@ -218,9 +218,8 @@ modList33=list(
   lme(eMPD~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(FRic4~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_555),
   lme(GrossAsynchrony_s~lg2SppN+FRic4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site,control=cc,data=stab_555),
-  lme(TS_lg2~GrossAsynchrony_s+SLA+lg2SppN+meanPrecip+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
+  lme(TS_lg2~GrossAsynchrony_s+SLA+lg2SppN+FRic4+eMPD+meanPrecip+CV_Precip,random=~1+lg2SppN|Site, control=cc,data=stab_555)
 )
-
 
 lapply(modList33, plot)
 
@@ -251,9 +250,9 @@ mf_ts_smpd$ResponseVars<-c("eMPD","FRic4","Asynchrony","Temp_Stability")
 mf_ts_smpd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FRic4,meanPrecip,CV_Precip","Asynchrony,SLA,lg2SppN,meanPrecip,CV_Precip")
 mf_ts_smpd$ModClass<-"FRic4_eMPD_SLA"
 
-write.table(ts_smpd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smpd_fdis_sem_coefs_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(mf_ts_smpd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smpd_fdis_model_fits_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
-write.table(smpdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smpd_fdis_semfit_SIMPLE_SLA_July2017.csv",sep=",",row.names=F)
+write.table(ts_smpd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smpd_fdis_sem_coefs_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_smpd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smpd_fdis_model_fits_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
+write.table(smpdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_smpd_fdis_semfit_SIMPLE_SLA_Nov2017.csv",sep=",",row.names=F)
 
 #######################
 # LDMC ################
