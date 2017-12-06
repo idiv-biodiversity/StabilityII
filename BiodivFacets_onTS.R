@@ -487,7 +487,7 @@ g<-ggplot(data=fdis_ts,aes(x=FDis4,y=pred_t))+
   geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
-  labs(x="Functional diversity (FD)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x="Fast-slow functional diversity (Fast-Slow FD)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 FDis<-g+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
@@ -654,7 +654,7 @@ gg<-ggplot(data=fs_ts,aes(x=PCAdim1_4trts,y=pred_t))+
   #geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
-  labs(x="Fast-slow spectrum ",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x="Fast-slow spectrum (CWM Fast-Slow)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
@@ -673,7 +673,7 @@ cairo_ps(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTr
                    height=8,width=4,
                 bg="white")
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/eMNTD_FD_CWM_onTS_August2017.png", 
+png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/eMNTD_FD_CWM_onTS_Dec2017.png", 
     units="in", 
     width=4, 
     height=8, 
