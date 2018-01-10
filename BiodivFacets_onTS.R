@@ -1,5 +1,3 @@
-rm(list=ls()) 
-
 library(lmerTest)
 library(nlme)
 library(dplyr)
@@ -13,6 +11,7 @@ ICClme <- function(out) {
 }
 
 # Data
+
 stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
