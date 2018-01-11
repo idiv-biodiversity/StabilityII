@@ -111,12 +111,11 @@ newdat$SppN<-2^(newdat$lg2SppN)
 newdat$pred_uCIt<-2^(newdat$p_uCI)
 newdat$pred_lCIt<-2^(newdat$p_lCI)
 
-
 c<-ggplot(data=spp_ts,aes(x=SppN,y=pred_t))+
 
     geom_smooth(data=spp_ts,aes(y=pred_t,x=SppN,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
-  geom_smooth(data=newdat,aes(y=pred_t,x=SppN),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
-  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=SppN),method="lm",formula=y~x,size=1,color="#1976D2",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="#1976D2",colour="transparent",alpha=0.4)+
 
 
   labs(x="Plant species richness",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
@@ -198,8 +197,8 @@ newdat$pred_lCIt<-2^(newdat$p_lCI)
 c<-ggplot(data=sync_ts,aes(x=GrossAsynchrony_s,y=pred_t))+
   
   geom_smooth(data=sync_ts,aes(y=pred_t,x=GrossAsynchrony_s,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
-  geom_smooth(data=newdat,aes(y=pred_t,x=GrossAsynchrony_s),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
-  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=GrossAsynchrony_s),method="lm",formula=y~x,size=1,color="#1976D2",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="#1976D2",colour="transparent",alpha=0.4)+
   
   
   labs(x=expression(bold(paste("Species asynchrony (",-eta," )"))),y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
@@ -312,11 +311,11 @@ newdat$pred_lCIt<-2^(newdat$p_lCI)
 d<-ggplot(data=emntd_ts,aes(x=eMNTD,y=pred_t))+
   
   geom_smooth(data=emntd_ts,aes(y=pred_t,x=eMNTD,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
-  geom_smooth(data=newdat,aes(y=pred_t,x=eMNTD),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
-  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=eMNTD),method="lm",formula=y~x,size=1,color="#1976D2",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="#1976D2",colour="transparent",alpha=0.4)+
   
   
-  labs(x="Phylogenetic diversity (MNTD)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x="PD",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 emNTD<-d+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
@@ -325,7 +324,6 @@ emNTD<-d+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
                axis.text.x=element_text(colour="black",face="bold",size=8),
                plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),panel.border=element_rect(fill=NA,colour="black"),
                panel.background = element_rect(fill = "white"))
-
 
 
 #eMPD
@@ -482,11 +480,11 @@ newdat$pred_lCIt<-2^(newdat$p_lCI)
 g<-ggplot(data=fdis_ts,aes(x=FDis4,y=pred_t))+
   
   geom_smooth(data=fdis_ts,aes(y=pred_t,x=FDis4,group=Site),method="lm",formula=y~x,size=0.5,color="gray80",se=FALSE)+
-  geom_smooth(data=newdat,aes(y=pred_t,x=FDis4),method="lm",formula=y~x,size=1,color="black",se=FALSE)+
-  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
+  geom_smooth(data=newdat,aes(y=pred_t,x=FDis4),method="lm",formula=y~x,size=1,color="#1976D2",se=FALSE)+
+  geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="#1976D2",colour="transparent",alpha=0.4)+
   
   
-  labs(x="Fast-slow functional diversity (Fast-Slow FD)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x="Fast-Slow FD",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 FDis<-g+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
@@ -653,7 +651,7 @@ gg<-ggplot(data=fs_ts,aes(x=PCAdim1_4trts,y=pred_t))+
   #geom_ribbon(data=newdat,aes(ymin=pred_lCIt,ymax=pred_uCIt),fill="gray50",colour="transparent",alpha=0.4)+
   
   
-  labs(x="Fast-slow spectrum (CWM Fast-Slow)",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
+  labs(x="CWM Fast-Slow",y=expression(bold(paste("Ecosystem stability ( ", mu," / ",sigma," )")))) +
   scale_x_continuous() + scale_y_continuous(trans="log2",lim=c(0.8,16),breaks=c(1,2,4,8,16))
 
 FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
