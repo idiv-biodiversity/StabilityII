@@ -1,3 +1,7 @@
+#######################################################################
+# Effects on ecosystem stability of individual biodiversity facets   ##
+#######################################################################
+
 library(lmerTest)
 library(nlme)
 library(dplyr)
@@ -12,9 +16,9 @@ ICClme <- function(out) {
 
 # Data
 
-stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
+stab<-read.delim("data.csv",sep=",",header=T)
 
-stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
+stab<-filter(stab,Site!="BIODEPTH_GR")  # remove site where we didn't have good trait coverage
 
 stab_4<-select(stab,Site,Study_length,UniqueID,SppN,eMPD,eMNTD,ePSE,sMPD,sMNTD,FDis4,FRic4,PCAdim1_4trts,SLA, LDMC, LeafN, LeafP,
                Plot_TempStab,Plot_Biomassxbar, Plot_Biomasssd,Plot_Asynchrony, Gross_synchrony, Loreau_synchrony,annualTemp,meanPrecip,meanPET,CV_Temp,CV_Precip)
@@ -32,7 +36,6 @@ stab_4$PlotAsynchrony_s<-stab_4$Plot_Asynchrony*-1
 
 stab_4$GrossAsynchrony_s<-stab_4$Gross_synchrony*-1
 
-
 # further adjustments
 
 stab_4$SppN<-as.numeric(stab_4$SppN)
@@ -46,15 +49,15 @@ stab_4$lg2SppN <- log(stab_4$SppN,2)
 stab_444<-filter(stab_4, is.na(PlotAsynchrony_s)==FALSE)
 stab_444<-filter(stab_444, is.na(FRic4)==FALSE)
 
-###########################################
-# Effects on TS of biodiversity facets   ##
-###########################################
+#######################################################################
+# Effects on ecosystem stability of individual biodiversity facets   ##
+#######################################################################
 
 cc<-lmeControl(opt="optim")
 
-###########
-## SR  ####
-###########
+#########################
+## Species Richness  ####
+#########################
 
 Cand.set <- list( )
 Cand.set[[1]]<-lme(TS_lg2~lg2SppN,random=~1+lg2SppN|Site,control=cc,data=stab_444)
@@ -218,19 +221,13 @@ Sync<-c+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
 
 require(cowplot)
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/StabilityII/Div_Sync_onTS_August2017.png", 
+png(filename="Div_Sync_onTS.png", 
     type="cairo",
     units="in", 
     width=7, 
     height=4, 
     pointsize=2, 
     res=500)
-
-
-cairo_ps(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/StabilityII/Div_Sync_onTSDiv_Sync_onTS_August2017.eps",
-         family="sans",
-         height=4,width=7,
-         bg="white")
 
 
 plot_grid(SppN, Sync, labels=c("(a)","(b)"),label_size = 8,align ="hv")
@@ -665,12 +662,8 @@ FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
 #################
 ################
 
-cairo_ps(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/eMNTD_FD_CWM_onTS_August2017.eps",
-                   family="sans",
-                   height=8,width=4,
-                bg="white")
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/eMNTD_FD_CWM_onTS_Dec2017.png", 
+png(filename="eMNTD_FD_CWM_onTS.png", 
     units="in", 
     width=4, 
     height=8, 
@@ -782,7 +775,7 @@ FStrt<-gg+ theme(axis.title.x=element_text(colour="black",face="bold",size=10),
                  panel.background = element_rect(fill = "white"))
 
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/FS_longshort_Nov2017.png", 
+png(filename="FS_longshort.png", 
     units="in", 
     width=4, 
     height=4, 
