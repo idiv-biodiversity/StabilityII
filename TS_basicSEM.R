@@ -1,6 +1,16 @@
-rm(list=ls()) 
-#require(devtools)
-#install_github("jslefche/piecewiseSEM")
+###################################
+# Basic piecewise SEM             #
+# for each combination of         #
+# phylogenetic and functional     #
+# diversity metric:               #
+# 1) FDis + eMNTD                 #
+# 2) FRic + eMNTD                 #
+# 3) FDis + eMPD                  #
+# 4) FRic + eMPD                  #
+###################################
+
+require(devtools)
+install_github("jslefche/piecewiseSEM")
 
 require(dplyr)
 require(piecewiseSEM)
@@ -10,7 +20,7 @@ library(nlme)
 library(car) 
 
 # Data
-stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
+stab<-read.delim("data.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
@@ -103,9 +113,9 @@ mf_ts_emntd$ResponseVars<-c("eMNTD","FDis4","Asynchrony","Temp_Stability")
 mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, CV_Precip","eMNTD, FDis4,Asynchrony,lg2SppN,CV_Precip")
 mf_ts_emntd$ModClass<-"FDis_eMNTD"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"TS_emntd_fdis_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"TS_emntd_fdis_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"TS_emntd_fdis_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic4 - eMNTD    ###
@@ -145,9 +155,9 @@ mf_ts_emntd$ResponseVars<-c("eMNTD","FRic4","Asynchrony","Temp_Stability")
 mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4,meanPrecip,CV_Precip","Asynchrony,FRic4,eMNTD,lg2SppN,meanPrecip, CV_Precip")
 mf_ts_emntd$ModClass<-"FRic_eMNTD"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"TS_emntd_fric_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"TS_emntd_fric_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(emntdfric.fit,"TS_emntd_fric_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
 
 ##################
 # FDis_eMPD ######
@@ -189,9 +199,9 @@ mf_ts_empd$ResponseVars<-c("eMPD","FDis4","Asynchrony","Temp_Stability")
 mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FDis4,meanPrecip,CV_Precip","Asynchrony,FDis, eMPD,lg2SppN,CV_Precip,meanPrecip,CV_Precip")
 mf_ts_empd$ModClass<-"FDis_eMPD"
 
-write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(mf_ts_empd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(ts_empd2,"TS_empd_fdis_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"TS_empd_fdis_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(empdfdis.fit,"TS_empd_fdis_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic - eMPD #######
@@ -234,6 +244,6 @@ mf_ts_smpd$ResponseVars<-c("eMPD","FRic4","Asynchrony","Temp_Stability")
 mf_ts_smpd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FRic4,meanPrecip,CV_Precip","Asynchrony,F-S,FRic, eMPD,lg2SppN,meanPrecip,CV_Precip")
 mf_ts_smpd$ModClass<-"FRic4_eMPD"
 
-write.table(ts_smpd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(mf_ts_smpd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
-write.table(smpdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(ts_smpd2,"TS_empd_fric_sem_coefs_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(mf_ts_smpd,"TS_empd_fric_model_fits_SIMPLE_Nov2017.csv",sep=",",row.names=F)
+write.table(smpdfdis.fit,"TS_empd_fric_semfit_SIMPLE_Nov2017.csv",sep=",",row.names=F)

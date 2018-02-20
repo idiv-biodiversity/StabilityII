@@ -1,13 +1,18 @@
-####################################
-# EXTENDED SEM including mean + SD #
-######################################
-# added paths for mean and cv_precip #
-# to asynchrony                     ##
-######################################
+###############################################
+# EXTENDED SEM including mean + SD            #
+# added paths for mean and cv_precip          #
+# to asynchrony                               #
+# for each combination of                     #
+# phylogenetic and functional                 #
+# diversity metric:                           #
+# 1) FDis + eMNTD                             #
+# 2) FRic + eMNTD                             #
+# 3) FDis + eMPD                              #
+# 4) FRic + eMPD                              #
+###############################################
 
-rm(list=ls()) 
-#require(devtools)
-#install_github("jslefche/piecewiseSEM")
+require(devtools)
+install_github("jslefche/piecewiseSEM")
 
 require(dplyr)
 require(piecewiseSEM)
@@ -17,7 +22,7 @@ library(nlme)
 library(car) 
 
 # Data
-stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
+stab<-read.delim("data.csv",sep=",",header=T)
 
 stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
 
@@ -125,9 +130,9 @@ mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FDis4, meanPrecip, cv
                         "Asynchrony,lg2SppN,F-S,FD,PD, cvPrecip","meanBiomass,sdBiomass")
 mf_ts_emntd$ModClass<-"FDis_eMNTD_extended"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_model_fits_Extended_August2017.csv",sep=",",row.names=F)
-write.table(emntdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fdis_semfit_Extended_August2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"TS_emntd_fdis_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"TS_emntd_fdis_model_fits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(emntdfdis.fit,"TS_emntd_fdis_semfit_Extended_August2017.csv",sep=",",row.names=F)
 
 #######################
 ## FRic4 - eMNTD    ###
@@ -181,9 +186,9 @@ mf_ts_emntd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMNTD,FRic4, meanPrecip, me
                         "Asynchrony,lg2SppN,F-S, PD, FD, cvPrecip","meanBiomass,sdBiomass")
 mf_ts_emntd$ModClass<-"FRic_eMNTD_extended"
 
-write.table(ts_emntd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
-write.table(mf_ts_emntd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_model_fits_Extended_August2017.csv",sep=",",row.names=F)
-write.table(emntdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_emntd_fric_semfit_Extended_August2017.csv",sep=",",row.names=F)
+write.table(ts_emntd2,"TS_emntd_fric_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_emntd,"TS_emntd_fric_model_fits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(emntdfric.fit,"TS_emntd_fric_semfit_Extended_August2017.csv",sep=",",row.names=F)
 
 ##################
 # FDis_MPD ######
@@ -240,9 +245,9 @@ mf_ts_empd$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FDis4, meanPrecip, cvPr
                         "Asynchrony,lg2SppN,F-S, FD, PD, cvPrecip","meanBiomass,sdBiomass")
 mf_ts_empd$ModClass<-"FDis_eMPD_Extended"
 
-write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
-write.table(mf_ts_empd,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_modelfits_Extended_August2017.csv",sep=",",row.names=F)
-write.table(empdfdis.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fdis_semfits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(ts_empd2,"TS_empd_fdis_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_empd,"TS_empd_fdis_modelfits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(empdfdis.fit,"TS_empd_fdis_semfits_Extended_August2017.csv",sep=",",row.names=F)
 
 ##################
 # FRic_MPD #######
@@ -297,7 +302,7 @@ mf_ts_empd2$PredVars<-c("lg2SppN","lg2SppN","lg2SppN,eMPD,FRic4, meanPrecip, cvP
                         "Asynchrony,lg2SppN,F-S, FRic4, PD, cvPrecip","meanBiomass,sdBiomass")
 mf_ts_empd2$ModClass<-"FRic_eMPD_Extended"
 
-write.table(ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
-write.table(mf_ts_empd2,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_model_fits_Extended_August2017.csv",sep=",",row.names=F)
-write.table(empdfric.fit,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/TS_empd_fric_semfit_Extended_August2017.csv",sep=",",row.names=F)
+write.table(ts_empd2,"TS_empd_fric_sem_coefs_Extended_August2017.csv",sep=",",row.names=F)
+write.table(mf_ts_empd2,"TS_empd_fric_model_fits_Extended_August2017.csv",sep=",",row.names=F)
+write.table(empdfric.fit,"TS_empd_fric_semfit_Extended_August2017.csv",sep=",",row.names=F)
 

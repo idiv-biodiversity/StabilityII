@@ -1,8 +1,3 @@
----
-output: 
-  html_document: 
-    theme: readable
----
 # Code to support analyses in 'Multiple facets of biodiversity drive the diversity-stability relationship'  
 ## Authors: Dylan Craven et al.
 

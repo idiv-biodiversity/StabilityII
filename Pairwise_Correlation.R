@@ -1,3 +1,9 @@
+###############################################
+# Correlations among facets of biodiversity   #
+# estimated using multilevel meta-analytical  #
+# regression models                           #
+###############################################
+
 require(dplyr)
 require(psych)
 require(reshape2)
@@ -9,9 +15,9 @@ is.nan.data.frame <- function(x)
 
 
 # Data
-stab<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Stab_Stability_FD_PD_CWM_PlotYearAverages_VI.csv",sep=",",header=T)
+stab<-read.delim("data.csv",sep=",",header=T)
 
-stab<-filter(stab,Site!="BIODEPTH_GR")  # should get rid of site where we didn't have good trait coverage
+stab<-filter(stab,Site!="BIODEPTH_GR")  # eliminate site where we didn't have good trait coverage
 
 stab_4<-select(stab,Site,Study_length,UniqueID,SppN,eMPD,eMNTD,ePSE,sMPD,sMNTD,FDis4,FRic4,PCAdim1_4trts,SLA, LDMC, LeafN, LeafP,
                Plot_TempStab,Plot_Biomassxbar, Plot_Biomasssd,Plot_Asynchrony, Gross_synchrony, Loreau_synchrony,annualTemp,meanPrecip,meanPET,CV_Temp,CV_Precip)
@@ -118,7 +124,7 @@ colnames(jjj)[6]<-"upper95"
 jjj<-arrange(jjj,Var1,Var2)
 
 
-write.table(jjj,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_Jan2018.csv",sep=",",row.names=F)
+write.table(jjj,"Div_Corr_Effsizes.csv",sep=",",row.names=F)
 
 ############################
 # make correlation matrix  #
@@ -127,13 +133,7 @@ write.table(jjj,"/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/
 require(reshape2)
 require(viridis)
 
-jjj<-read.delim("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Effsizes_Jan2018.csv",sep=",",header=T)
-
-#jjj<-filter(jjj,Var1=="SppN"|Var1=="FDis4" | Var1=="FRic4"|Var1=="eMNTD"|Var1=="PCAdim1_4trts" |Var1=="PlotAsynchrony_s")
-#jjj<-filter(jjj,Var2=="SppN"|Var2=="FDis4" | Var2=="FRic4"|Var2=="eMNTD"|Var2=="PCAdim1_4trts"| Var2=="PlotAsynchrony_s")
-
-#jjj<-filter(jjj,Var1!="eMPD")
-#jjj<-filter(jjj,Var2!="eMPD")
+jjj<-read.delim("Div_Corr_Effsizes.csv",sep=",",header=T)
 
 corr_mat<-dcast(jjj,Var1~Var2,value.var="r",mean)
 
@@ -173,7 +173,7 @@ col2<-magma(256)
 
 ##################
 
-png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_Jan2018.png", 
+png(filename="Div_Corr.png", 
     type="cairo",
     units="in", 
     width=7, 
@@ -183,14 +183,5 @@ png(filename="/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/Sta
 
 
 corrplot(corr_mat, method="ellipse",type="upper",col=col,is.corr=TRUE,diag=TRUE,bg="white",tl.pos=TRUE,tl.cex=5,tl.col="black",tl.srt=0,cl.cex=5)
-
-dev.off()
-
-cairo_ps("/homes/dc78cahe/Dropbox (iDiv)/Research_projects/leipzigPhyTrt/StabilityII_data/Community_Level/Div_Corr_April2017.eps",
-         family="sans",
-         height=6,width=6,
-         bg="white")
-
-corrplot(corr_mat, method="ellipse",type="upper",col=col,is.corr=TRUE,diag=TRUE,bg="white",tl.pos=TRUE,tl.col="black",tl.srt=0)
 
 dev.off()
