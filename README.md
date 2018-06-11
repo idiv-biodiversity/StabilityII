@@ -1,6 +1,3 @@
----
-output: html_document
----
 ## Code to support analyses in:    
 Authors: Craven, D., N. Eisenhauer, W.D. Pearse, Y. Hautier, F.Isbell,C. Roscher, M. Bahn, C.
 Beierkuhnlein, G. Bönisch, N. Buchmann, C. Byun, J.A. Catford, B.E.L. Cerabolini, J.H.C.
