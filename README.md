@@ -1,7 +1,5 @@
 ---
-output: 
-  html_document: 
-    theme: flatly
+output: html_document
 ---
 ## Code to support analyses in:    
 Authors: Craven, D., N. Eisenhauer, W.D. Pearse, Y. Hautier, F.Isbell,C. Roscher, M. Bahn, C.
