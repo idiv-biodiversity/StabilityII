@@ -9,6 +9,7 @@ drive the diversity-stability relationship**. _Nature Ecology & Evolution_ In re
 
 **Data is currently available upon request. Please send an e-mail to:** dylan.craven@aya.yale.edu
 
+**Please note that we used version 1 of ['piecewiseSEM'](https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html#comparing-package-versions) was used for all analyses; version 2 of 'piecewiseSEM' was updated on June 11, 2018**
 
 ## Table of Contents  
 
